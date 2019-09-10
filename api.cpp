@@ -1,58 +1,49 @@
 #include "api.h"
+#include "json.hpp"
+
 #include <string>
+
+using json = nlohmann::json;
+using std::string;
+using std::vector;
+using namespace MechMania;
 
 namespace MechMania {
 
-Game::Game(gameJson, playerId) {
-  // TODO: use gameJson to set gameId_ field
-}
-
-Position::Position(positionJson) {
-  // TODO: parse Json to find Position information
-}
-
-Unit::Unit(unitJson) {
-  // TODO: parse Json to find Unit information
-}
-
-Tile::Tile(tileJson) {
-  // TODO: parse Json to find Tile information
+Game::Game(string gameJson, int playerId)
+    : gameJson_(gameJson), playerId_(playerId) {
+  auto parsedJson = json::parse(gameJson);
+  gameId_ = parsedJson["gameId"].get<int>();
 }
 
 // updates the game json. Called every turn
-void Game::updateGame(setGameJson) { gameJson = setGameJson; }
-
-Unit[] Game::convertJsonToUnits(std::string unitsJson) {
-  Unit units[3];
-  for (int i = 0; i < 3; i++) {
-    units[i] = Unit(unitsJson[i]);
-  }
-  return units;
+void Game::updateGame(string setGameJson) {
+  gameJson_ = json::parse(setGameJson);
 }
 
-Unit[] Game::getMyUnits() {
-  if (playerId == 1) {
-    // TODO: get p1Units
-    return convertJsonToUnits(p1Units);
+vector<Unit> Game::convertJsonToUnits(string unitsJson) {
+  auto unitJson = json::parse(unitsJson);
+  return unitJson.get<vector<Unit>>();
+}
+
+vector<Unit> Game::getMyUnits() {
+  if (playerId_ == 1) {
+    return gameJson_["p1Units"].get<vector<Unit>>();
   } else {
-    // TODO: get p2Units
-    return convertJsonToUnits(p2Units);
+    return gameJson_["p2Units"].get<vector<Unit>>();
   }
 }
 
-Unit[] Game::getEnemyUnits() {
-  if (playerId == 1) {
-    // TODO: get p2Units
-    return convertJsonToUnits(p2Units);
+vector<Unit> Game::getEnemyUnits() {
+  if (playerId_ == 1) {
+    return gameJson_["p2Units"].get<vector<Unit>>();
   } else {
-    // TODO: get p1Units
-    return convertJsonToUnits(p1Units);
+    return gameJson_["p1Units"].get<vector<Unit>>();
   }
 }
 
 Tile Game::getTile(Position p) {
-  // TODO: get tile using position
-  return Tile(tileJson);
+  return gameJson_["map"]["tiles"].get<vector<vector<Tile>>>().at(p.x).at(p.y);
 }
 
 Unit Game::getUnitAt(Position p) {
@@ -60,9 +51,10 @@ Unit Game::getUnitAt(Position p) {
   return tile.unit;
 }
 
-std::vector<std::string> Game::pathTo(Position start, Position end,
-                                      std::vector<Tile> tilesToAvoid) {
+vector<Direction> Game::pathTo(Position start, Position end,
+                               vector<Tile> tilesToAvoid) {
   // TODO: copy python version here
+  return vector<Direction>();
 }
 
 } // namespace MechMania

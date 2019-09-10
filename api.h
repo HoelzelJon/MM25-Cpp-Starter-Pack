@@ -1,75 +1,79 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
+#include "json.hpp"
+
+using json = nlohmann::json;
+
 namespace MechMania {
 
-class Game {
-  std::string gameJson_;
-  int playerId_;
-  int gameId_;
-
-public:
-  Game(std::string setGameJson, int setPlayerId)
-      : gameJson_(setGameJson), playerId_(setPlayerId);
-  UnitSetup[] getSetup();
-  Decision doTurn();
-
-  void updateGame(gameJson);
-  Unit[] convertJsonToUnits(unitsJson);
-  Unit[] getMyUnits();
-  Unit[] getEnemyUnits();
-  Tile getTile(Position p);
-  Unit getUnitAt(Position p);
-  Direction pathTo(Position start, Position end, vector<Tile> tilesToAvoid);
-};
-
 enum Direction { UP, DOWN, LEFT, RIGHT };
-
-struct UnitSetup {
-  int attackPattern[7][7];
-  int health;
-  int speed;
-
-  UnitSetup(int setAttackPattern[][], int setHealth, int setSpeed)
-      : attackPattern(setAttackPattern), health(setHealth), speed(setSpeed);
-};
-
-struct Decision {
-  int priorities[3];
-  std::vector<Direction> movements[3];
-  Direction attacks[3];
-
-  Decision(int setPriorities[], std::vector<Direction> setMovements[],
-           Direction setAttacks[])
-      : priorities(setPriorities), movements(setMovements), attacks(setAttacks);
-};
+enum TileType { BLANK, DESTRUCTABLE, INDESTRUCTABLE };
 
 struct Position {
   int x;
   int y;
-
-  Position(positionJson);
 };
 
 struct Unit {
   int hp;
   int speed;
-  int attack;
+  std::vector<std::vector<int>> attack;
   bool isAlive;
   int id;
   Position pos;
-  Unit unit;
-
-  Unit(unitJson);
 };
 
 struct Tile {
   int id;
   int hp;
   Unit unit;
-  std::string type;
+  TileType type;
+};
 
-  Tile(tileJson);
+struct UnitSetup {
+  std::vector<std::vector<int>> attackPattern;
+  int health;
+  int speed;
+};
+
+struct Decision {
+  std::vector<int> priorities;
+  std::vector<std::vector<Direction>> movements;
+  std::vector<Direction> attacks;
+};
+
+void to_json(json &j, const Position &p);
+void from_json(const json &j, Position &p);
+void to_json(json &j, const Unit &u);
+void from_json(const json &j, Unit &u);
+void to_json(json &j, const Tile &t);
+void from_json(const json &j, Tile &t);
+void to_json(json &j, const UnitSetup &s);
+void from_json(const json &j, UnitSetup &s);
+void to_json(json &j, const Decision &d);
+void from_json(const json &j, Decision &d);
+
+class Game {
+  nlohmann::json gameJson_;
+  int playerId_;
+  int gameId_;
+
+public:
+  Game(std::string setGameJson, int setPlayerId);
+  std::vector<UnitSetup> getSetup();
+  Decision doTurn();
+
+  void updateGame(std::string gameJson);
+  std::vector<Unit> convertJsonToUnits(std::string unitsJson);
+  std::vector<Unit> getMyUnits();
+  std::vector<Unit> getEnemyUnits();
+  Tile getTile(Position p);
+  Unit getUnitAt(Position p);
+  std::vector<Direction> pathTo(Position start, Position end,
+                                std::vector<Tile> tilesToAvoid);
 };
 
 } // namespace MechMania
