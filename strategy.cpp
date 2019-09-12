@@ -1,21 +1,18 @@
 #include "api.h"
 
+#include <iostream>
 #include <vector>
 
 using std::vector;
 
-namespace MechMania {
+using namespace MechMania;
 
 vector<UnitSetup> Game::getSetup() {
+  std::cout << "in game setup" << std::endl;
   vector<UnitSetup> units;
-  for (int i = 0; i < units.size(); i++) {
-    vector<vector<int>> attackPattern;
-    for (int x = 0; x < 7; x++) {
-      attackPattern.push_back(vector<int>());
-      for (int y = 0; y < 7; y++) {
-        attackPattern[x].push_back(0);
-      }
-    }
+  for (int i = 0; i < NUM_BOTS; i++) {
+    vector<vector<int>> attackPattern(7, vector<int>(7));
+    attackPattern[3][4] = 1;
     int health = 5;
     int speed = 4;
     UnitSetup unitSetup = {attackPattern, health, speed};
@@ -28,11 +25,9 @@ vector<UnitSetup> Game::getSetup() {
 Decision Game::doTurn() {
   vector<int> priorities = {1, 2, 3};
   vector<vector<Direction>> movements = {
-      {UP, DOWN, LEFT, DOWN}, {UP, DOWN, LEFT, RIGHT}, {DOWN, UP, LEFT, RIGHT}};
+      {UP, UP, UP, UP}, {DOWN, DOWN, DOWN, DOWN}, {LEFT, LEFT, LEFT}};
   vector<Direction> attacks = {DOWN, UP, LEFT};
 
   Decision decision = {priorities, movements, attacks};
   return decision;
 }
-
-} // namespace MechMania

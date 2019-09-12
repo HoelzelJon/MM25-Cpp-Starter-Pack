@@ -17,38 +17,46 @@ using std::vector;
 using namespace MechMania;
 
 int main(int argc, char **argv) {
-  map<string, Game *> games;
+  map<string, Game> games;
 
   crow::SimpleApp app;
 
   CROW_ROUTE(app, "/game_init")
       .methods("POST"_method)([&games](const crow::request &req) {
         string body = req.body;
-        std::cout << body << std::endl;
         json parsedJson = json::parse(body);
-        Game *myGame =
-            new Game(body, std::atoi(parsedJson["playerNum"].get<string>()));
-        games[parsedJson["gameId"].get<string>()] = myGame;
-        vector<UnitSetup> setup = myGame->getSetup();
+        std::cout << parsedJson << std::endl;
+        int playerNum = parsedJson["playerNum"].get<int>();
+        Game myGame(body, playerNum);
+        std::cout << "playerNum: " << playerNum << std::endl;
+        string gameId = parsedJson["gameId"].get<string>();
+        std::cout << "gameId: " << gameId << std::endl;
+        games[gameId] = myGame;
+        vector<UnitSetup> setup = myGame.getSetup();
 
         json setupJson = setup;
         stringstream ss;
         ss << setupJson;
+        std::cout << "setupJson: " << setupJson << std::endl;
         return ss.str();
       });
 
   CROW_ROUTE(app, "/turn")
       .methods("POST"_method)([&games](const crow::request &req) {
         string body = req.body;
-        std::cout << body << std::endl;
         json parsedJson = json::parse(body);
-        Game *myGame = games[parsedJson["gameId"].get<string>()];
-        myGame->updateGame(body);
-        Decision decision = myGame->doTurn();
+        std::cout << parsedJson << std::endl;
+        string gameId = parsedJson["gameId"].get<string>();
+        std::cout << "gameId: " << gameId << std::endl;
+        Game myGame = games[gameId];
+        myGame.updateGame(body);
+        std::cout << "updated game with new body" << std::endl;
+        Decision decision = myGame.doTurn();
 
         json decisionJson = decision;
         stringstream ss;
         ss << decisionJson;
+        std::cout << "decisionJson: " << decisionJson << std::endl;
         return ss.str();
       });
 
@@ -58,9 +66,17 @@ int main(int argc, char **argv) {
         std::cout << body << std::endl;
         json parsedJson = json::parse(body);
         games.erase(parsedJson["gameId"].get<string>());
+        std::cout << "game exited, length of games: " << games.size()
+                  << std::endl;
         return "Game successfully exited.";
       });
 
+  if (argc != 2) {
+    std::cout << "please run ./server with 1 argument: the port number to "
+                 "host on"
+              << std::endl;
+    return 1;
+  }
   long port = strtol(argv[1], nullptr, 0);
   app.port(port).multithreaded().run();
 }

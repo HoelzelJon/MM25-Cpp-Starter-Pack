@@ -72,3 +72,25 @@ void from_json(const json &j, Decision &d) {
 }
 
 } // namespace MechMania
+
+std::ostream &operator<<(std::ostream &os, const MechMania::UnitSetup &s) {
+  os << "UnitSetup(attackPattern=[";
+  for (int i = 0; i < s.attackPattern.size(); i++) {
+    os << "[";
+    for (int j = 0; j < s.attackPattern[i].size(); j++) {
+      os << s.attackPattern[i][j];
+      if (j != s.attackPattern[i].size() - 1) {
+        os << ",";
+      } else {
+        os << "]";
+      }
+    }
+    if (i != s.attackPattern.size() - 1) {
+      os << ",";
+    } else {
+      os << "]";
+    }
+  }
+  os << ",health=" << s.health << ",speed=" << s.speed << ")";
+  return os;
+}

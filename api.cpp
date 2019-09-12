@@ -1,6 +1,7 @@
 #include "api.h"
 #include "json.hpp"
 
+#include <iostream>
 #include <string>
 
 using json = nlohmann::json;
@@ -8,12 +9,24 @@ using std::string;
 using std::vector;
 using namespace MechMania;
 
-namespace MechMania {
-
 Game::Game(string gameJson, int playerId)
     : gameJson_(gameJson), playerId_(playerId) {
+  std::cout << "in Game::Game(string, int)" << std::endl;
   auto parsedJson = json::parse(gameJson);
-  gameId_ = parsedJson["gameId"].get<int>();
+  gameId_ = parsedJson["gameId"].get<string>();
+}
+
+Game::Game(const Game &other)
+    : gameJson_(other.gameJson_), playerId_(other.playerId_) {
+  std::cout << "in Game::Game(Game)" << std::endl;
+}
+
+Game &Game::operator=(const Game &other) {
+  std::cout << "in Game::operator=(Game)" << std::endl;
+  gameJson_ = other.gameJson_;
+  playerId_ = other.playerId_;
+  gameId_ = other.gameId_;
+  return *this;
 }
 
 // updates the game json. Called every turn
@@ -56,5 +69,3 @@ vector<Direction> Game::pathTo(Position start, Position end,
   // TODO: copy python version here
   return vector<Direction>();
 }
-
-} // namespace MechMania

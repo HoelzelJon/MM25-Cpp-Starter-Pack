@@ -9,6 +9,8 @@ using json = nlohmann::json;
 
 namespace MechMania {
 
+static constexpr int NUM_BOTS = 3;
+
 enum Direction { UP, DOWN, LEFT, RIGHT };
 enum TileType { BLANK, DESTRUCTABLE, INDESTRUCTABLE };
 
@@ -59,21 +61,26 @@ void from_json(const json &j, Decision &d);
 class Game {
   nlohmann::json gameJson_;
   int playerId_;
-  int gameId_;
+  std::string gameId_;
 
 public:
-  Game(std::string setGameJson, int setPlayerId);
+  Game() : gameJson_({}), playerId_(0), gameId_(""){};
+  Game(std::string, int);
+  Game(const Game &);
+  Game &operator=(const Game &);
   std::vector<UnitSetup> getSetup();
   Decision doTurn();
 
-  void updateGame(std::string gameJson);
-  std::vector<Unit> convertJsonToUnits(std::string unitsJson);
+  void updateGame(std::string);
+  std::vector<Unit> convertJsonToUnits(std::string);
   std::vector<Unit> getMyUnits();
   std::vector<Unit> getEnemyUnits();
-  Tile getTile(Position p);
-  Unit getUnitAt(Position p);
-  std::vector<Direction> pathTo(Position start, Position end,
-                                std::vector<Tile> tilesToAvoid);
+  Tile getTile(Position);
+  Unit getUnitAt(Position);
+  std::vector<Direction> pathTo(Position, Position, std::vector<Tile>);
 };
 
 } // namespace MechMania
+
+std::ostream &operator<<(std::ostream &os, const MechMania::UnitSetup &s);
+std::ostream &operator<<(std::ostream &os, const MechMania::Decision &s);
