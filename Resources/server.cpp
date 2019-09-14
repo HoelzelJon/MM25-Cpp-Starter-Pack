@@ -1,3 +1,4 @@
+#include "../strategy.h"
 #include "api.h"
 #include "crow_all.h"
 #include "json.hpp"
@@ -17,7 +18,7 @@ using std::vector;
 using namespace MechMania;
 
 int main(int argc, char **argv) {
-  map<string, Game> games;
+  map<string, Strategy> games;
 
   crow::SimpleApp app;
 
@@ -27,7 +28,7 @@ int main(int argc, char **argv) {
         json parsedJson = json::parse(body);
         std::cout << parsedJson << std::endl;
         int playerNum = parsedJson["playerNum"].get<int>();
-        Game myGame(body, playerNum);
+        Strategy myGame(body, playerNum);
         // std::cout << "playerNum: " << playerNum << std::endl;
         string gameId = parsedJson["gameId"].get<string>();
         // std::cout << "gameId: " << gameId << std::endl;
@@ -48,7 +49,7 @@ int main(int argc, char **argv) {
         // std::cout << parsedJson << std::endl;
         string gameId = parsedJson["gameId"].get<string>();
         // std::cout << "gameId: " << gameId << std::endl;
-        Game myGame = games[gameId];
+        Strategy myGame = games[gameId];
         myGame.updateGame(body);
         // std::cout << "updated game with new body" << std::endl;
         Decision decision = myGame.doTurn();

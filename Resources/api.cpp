@@ -11,18 +11,18 @@ using namespace MechMania;
 
 Game::Game(string gameJson, int playerId)
     : gameJson_(gameJson), playerId_(playerId) {
-  std::cout << "in Game::Game(string, int)" << std::endl;
+  // std::cout << "in Game::Game(string, int)" << std::endl;
   auto parsedJson = json::parse(gameJson);
   gameId_ = parsedJson["gameId"].get<string>();
 }
 
 Game::Game(const Game &other)
     : gameJson_(other.gameJson_), playerId_(other.playerId_) {
-  std::cout << "in Game::Game(Game)" << std::endl;
+  // std::cout << "in Game::Game(Game)" << std::endl;
 }
 
 Game &Game::operator=(const Game &other) {
-  std::cout << "in Game::operator=(Game)" << std::endl;
+  // std::cout << "in Game::operator=(Game)" << std::endl;
   gameJson_ = other.gameJson_;
   playerId_ = other.playerId_;
   gameId_ = other.gameId_;
@@ -74,7 +74,6 @@ vector<UnitSetup> Game::getSetup() {
   vector<UnitSetup> units;
   for (int i = 0; i < NUM_BOTS; i++) {
     vector<vector<int>> attackPattern(7, vector<int>(7));
-    attackPattern[3][4] = 1;
     int health = 5;
     int speed = 4;
     UnitSetup unitSetup = {attackPattern, health, speed};
@@ -87,7 +86,7 @@ vector<UnitSetup> Game::getSetup() {
 Decision Game::doTurn() {
   vector<int> priorities = {1, 2, 3};
   vector<vector<Direction>> movements = {
-      {UP, UP, UP, UP}, {DOWN, DOWN, DOWN, DOWN}, {LEFT, LEFT, LEFT}};
+      {UP, UP, UP, UP}, {DOWN, DOWN, DOWN, DOWN}, {LEFT, LEFT, LEFT, LEFT}};
   vector<Direction> attacks = {DOWN, UP, LEFT};
 
   Decision decision = {priorities, movements, attacks};
