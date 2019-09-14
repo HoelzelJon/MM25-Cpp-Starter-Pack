@@ -19,4 +19,4 @@ json_conversions.o : Resources/json_conversions.cpp Resources/api.h
 	$(CXX) $(CXXFLAGS) Resources/json_conversions.cpp
 
 clean :
-	rm *.o server
+	rm *.o server Resources/*.o
