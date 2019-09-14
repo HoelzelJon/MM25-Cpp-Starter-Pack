@@ -3,20 +3,20 @@ CXXFLAGS = -std=c++1y -stdlib=libc++ -c -g -O0 -Wall -Wextra -pedantic
 LD = clang++
 LDFLAGS = -std=c++1y -stdlib=libc++ -lc++abi -lm
 
-server : api.o strategy.o json_conversions.o server.o
-	$(LD) api.o strategy.o server.o json_conversions.o $(LDFLAGS) -o server
+server : Resources/api.o strategyOne.o Resources/json_conversions.o Resources/server.o
+	$(LD) Resources/api.o strategyOne.o Resources/server.o Resources/json_conversions.o $(LDFLAGS) -o server
 
-server.o : server.cpp api.h crow_all.h json.hpp
-	$(CXX) $(CXXFLAGS) server.cpp
+server.o : Resources/server.cpp Resources/api.h Resources/crow_all.h Resources/json.hpp
+	$(CXX) $(CXXFLAGS) Resources/server.cpp
 
-strategy.o : strategy.cpp api.h
-	$(CXX) $(CXXFLAGS) strategy.cpp
+strategyOne.o : strategyOne.cpp Resources/api.h
+	$(CXX) $(CXXFLAGS) strategyOne.cpp
 
-api.o : api.cpp api.h json.hpp
-	$(CXX) $(CXXFLAGS) api.cpp
+api.o : Resources/api.cpp api.h Resources/json.hpp
+	$(CXX) $(CXXFLAGS) Resources/api.cpp
 
-json_conversions.o : json_conversions.cpp api.h
-	$(CXX) $(CXXFLAGS) json_conversions.cpp
+json_conversions.o : Resources/json_conversions.cpp Resources/api.h
+	$(CXX) $(CXXFLAGS) Resources/json_conversions.cpp
 
 clean :
 	rm *.o server
