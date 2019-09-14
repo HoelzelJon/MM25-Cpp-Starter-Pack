@@ -1,11 +1,11 @@
 #pragma once
-#include "Resources/api.h"
+#include "api.h"
 
-class StrategyTwo : public MechMania::Game {
+class Strategy2 : public MechMania::Game {
 public:
-  StrategyTwo() : Game(){};
-  StrategyTwo(const StrategyTwo &other) : Game(other){};
-  StrategyTwo(std::string gameId, int playerId) : Game(gameId, playerId){};
+  Strategy2() : Game(){};
+  Strategy2(const Strategy2 &other) : Game(other){};
+  Strategy2(std::string gameId, int playerId) : Game(gameId, playerId){};
   std::vector<MechMania::UnitSetup> getSetup();
   MechMania::Decision doTurn();
 };

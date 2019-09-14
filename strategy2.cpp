@@ -1,5 +1,5 @@
-#include "Resources/api.h"
-#include "strategy.h"
+#include "strategy2.h"
+#include "api.h"
 
 #include <iostream>
 #include <vector>
@@ -8,7 +8,7 @@ using std::vector;
 
 using namespace MechMania;
 
-vector<UnitSetup> StrategyTwo::getSetup() {
+vector<UnitSetup> Strategy2::getSetup() {
   vector<UnitSetup> units;
   for (int i = 0; i < NUM_BOTS; i++) {
     vector<vector<int>> attackPattern(7, vector<int>(7));
@@ -22,7 +22,7 @@ vector<UnitSetup> StrategyTwo::getSetup() {
   return units;
 }
 
-Decision StrategyTwo::doTurn() {
+Decision Strategy2::doTurn() {
   vector<int> priorities = {1, 2, 3};
   vector<vector<Direction>> movements = {
       {UP, UP, UP, UP}, {DOWN, DOWN, DOWN, DOWN}, {LEFT, LEFT, LEFT}};

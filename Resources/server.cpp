@@ -1,5 +1,5 @@
+#include "../api.h"
 #include "../strategy.h"
-#include "api.h"
 #include "crow_all.h"
 #include "json.hpp"
 

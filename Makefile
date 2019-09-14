@@ -11,14 +11,17 @@ both-strategies : server server2
 server2 : Resources/api.o strategy2.o Resources/json_conversions.o Resources/server2.o
 	$(LD) Resources/api.o strategy2.o Resources/server2.o Resources/json_conversions.o $(LDFLAGS) -o server2
 
-server.o : Resources/server.cpp Resources/api.h Resources/crow_all.h Resources/json.hpp
+server.o : Resources/server.cpp api.h Resources/crow_all.h Resources/json.hpp
 	$(CXX) $(CXXFLAGS) Resources/server.cpp
 
-server.o : Resources/server2.cpp Resources/api.h Resources/crow_all.h Resources/json.hpp
+server2.o : Resources/server2.cpp api.h Resources/crow_all.h Resources/json.hpp
 	$(CXX) $(CXXFLAGS) Resources/server2.cpp
 
-strategyOne.o : strategyOne.cpp Resources/api.h
-	$(CXX) $(CXXFLAGS) strategyOne.cpp
+strategy.o : strategy.cpp api.h
+	$(CXX) $(CXXFLAGS) strategy.cpp
+
+strategy2.o : strategy2.cpp api.h
+	$(CXX) $(CXXFLAGS) strategy2.cpp
 
 api.o : Resources/api.cpp api.h Resources/json.hpp
 	$(CXX) $(CXXFLAGS) Resources/api.cpp
