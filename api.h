@@ -22,11 +22,6 @@ enum Direction { UP, DOWN, LEFT, RIGHT };
  * Possible types of terrain.
  */
 enum TileType { BLANK, DESTRUCTABLE, INDESTRUCTABLE };
-/**
- * Possible attack pattern types (for basicAttackPattern(AttackPatternType)
- * function)
- */
-enum AttackPatternType { SNIPER, AOE, MELEE };
 
 /**
  * A Position struct that holds information for a x and y coordinate that can
@@ -140,60 +135,14 @@ class Game {
   std::string gameId_;
 
   /**
-   * Converts a json given as a string to proper unit objects. Mostly used
-   * internally.
-   */
-  std::vector<Unit> convertJsonToUnits(std::string);
-  /**
-   * Gets a vector of Unit objects that represent the information of the
-   * player's Units (playerId specified by the private variable.
-   */
-  std::vector<Unit> getMyUnits();
-  /**
-   * Gets a vector of Unit objects that represent the opponent Units.
-   */
-  std::vector<Unit> getEnemyUnits();
-  /**
-   * Get a tile at a specific Position, given by a Position object.
-   */
-  Tile getTile(Position);
-  /**
-   * Get a Unit at a position, if a Unit exists at that position. Else returns
-   * null.
-   */
-  Unit getUnitAt(Position);
-  /**
-   * Gives a path from a Position to another Position, while avoiding Tiles,
-   * given by tilesToAvoid
-   */
-  std::vector<Direction> pathTo(Position, Position, std::vector<Tile>);
-  std::vector<Direction> pathTo(Position, Position);
-
-  // ---------------- STATIC FUNCTIONS ------------------
-  /**
    * Checks if a Decision is valid.
    */
   static bool isDecisionValid(Decision);
+
   /**
    * Checks if a UnitSetup is valid.
    */
   static bool isUnitSetupValid(UnitSetup);
-  /**
-   * Helper function to create a Unit: given an attack pattern and a position,
-   * return the positions that will be damaged, and by how much.
-   */
-  std::vector<std::pair<Position, int>>
-  getPositionsOfAttackPattern(std::vector<std::vector<int>> attackPattern,
-                              Direction dir);
-  /**
-   * Helper function get the final position of a movement.
-   */
-  Position getPositionAfterMovement(Position init,
-                                    std::vector<Direction> movementSteps);
-  /**
-   * Helper function to create an attack pattern based off of a template
-   */
-  std::vector<std::vector<int>> basicAttackPattern(AttackPatternType);
 
 public:
   /**
@@ -232,6 +181,34 @@ public:
    * private function called by server to update the game json every turn.
    */
   void updateGame(std::string);
+  /**
+   * Converts a json given as a string to proper unit objects. Mostly used
+   * internally.
+   */
+  std::vector<Unit> convertJsonToUnits(std::string);
+  /**
+   * Gets a vector of Unit objects that represent the information of the
+   * player's Units (playerId specified by the private variable.
+   */
+  std::vector<Unit> getMyUnits();
+  /**
+   * Gets a vector of Unit objects that represent the opponent Units.
+   */
+  std::vector<Unit> getEnemyUnits();
+  /**
+   * Get a tile at a specific Position, given by a Position object.
+   */
+  Tile getTile(Position);
+  /**
+   * Get a Unit at a position, if a Unit exists at that position. Else returns
+   * null.
+   */
+  Unit getUnitAt(Position);
+  /**
+   * Gives a path from a Position to another Position, while avoiding Tiles,
+   * given by tilesToAvoid
+   */
+  std::vector<Direction> pathTo(Position, Position, std::vector<Tile>);
 };
 
 } // namespace MechMania
@@ -245,7 +222,3 @@ std::ostream &operator<<(std::ostream &os, const MechMania::UnitSetup &s);
  * operator<< overload to convert Decision to a readable format.
  */
 std::ostream &operator<<(std::ostream &os, const MechMania::Decision &s);
-
-bool operator==(const Position1 &lhs, const Position1 &rhs) {
-  return lhs.x == rhs.x && lhs.y == rhs.y;
-}

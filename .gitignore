@@ -1,4 +1,4 @@
 *.o
-server*
+server
 mm25_game_engine.jar
 Maps/*
