@@ -66,8 +66,131 @@ Unit Game::getUnitAt(Position p) {
 
 vector<Direction> Game::pathTo(Position start, Position end,
                                vector<Tile> tilesToAvoid) {
-  // TODO: copy python version here
+  queue<pair<Position, vector<Direction>>> q();
+  q.push(pair < Position, vector<Direction>(Position(), vector<Direction>()));
+
+  vector<vector<Tile>> tiles =
+      gameJson_["map"]["tiles"].get<vector<vector<Tile>>>();
+  vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size()));
+
+  while (!q.empty()) {
+    pair<Position, vector<Direction>> p = q.pop();
+    Position pos = p.first;
+    vector<Direction> dirs = p.second;
+
+    if (visited[pos.y][pos.x]) {
+      continue;
+    } else {
+      visited[pos.y][pos.x] = true;
+    }
+
+    if (pos == end) {
+      return dirs;
+    }
+
+    Position left = {pos.x - 1, pos.y};
+    if (!(left.x < 0 ||
+          std::find(tilesToAvoid.begin(), tilesToAvoid.end(), left) !=
+              tilesToAvoid.end() ||
+          getTile(left).type != TileType::BLANK)) {
+      vector<Direction> leftDirs(dirs);
+      leftDirs.append(Direction::LEFT);
+      q.push(pair<Position, vector<Direction>>(left, leftDirs));
+    }
+
+    Position right = {pos.x + 1, pos.y};
+    if (!(right.x > tiles.size() ||
+          std::find(tilesToAvoid.begin(), tilesToAvoid.end(), right) !=
+              tilesToAvoid.end() ||
+          getTile(right).type != TileType::BLANK)) {
+      vector<Direction> rightDirs(dirs);
+      rightDirs.append(Direction::LEFT);
+      q.push(pair<Position, vector<Direction>>(right, rightDirs));
+    }
+
+    Position up = {pos.x, pos.y + 1};
+    if (!(up.y > tiles.size() ||
+          std::find(tilesToAvoid.begin(), tilesToAvoid.end(), up) !=
+              tilesToAvoid.end() ||
+          getTile(up).type != TileType::BLANK)) {
+      vector<Direction> upDirs(dirs);
+      upDirs.append(Direction::LEFT);
+      q.push(pair<Position, vector<Direction>>(up, upDirs));
+    }
+
+    Position down = {pos.x, pos.y - 1};
+    if (!(down.y < 0 ||
+          std::find(tilesToAvoid.begin(), tilesToAvoid.end(), down) !=
+              tilesToAvoid.end() ||
+          getTile(down).type != TileType::BLANK)) {
+      vector<Direction> downDirs(dirs);
+      downDirs.append(Direction::LEFT);
+      q.push(pair<Position, vector<Direction>>(down, downDirs));
+    }
+  }
+
   return vector<Direction>();
+}
+
+static bool isDecisionValid(Decision d) {
+  // TODO: implement
+  return false;
+}
+
+static bool isUnitSetupValid(UnitSetup s) {
+  // TODO: implement
+  return false;
+}
+
+vector<pair<Position, int>>
+getPositionsOfAttackPattern(vector<vector<int>> attackPattern, Direction dir) {
+  Unit unit = getUnit(unitId);
+  vector<vector<int>> &attackPattern = unit.attackPattern;
+  switch (dir) {
+  case LEFT:
+    attackPattern = rotateAttackPattern(attackPattern);
+  case DOWN:
+    attackPattern = rotateAttackPattern(attackPattern);
+  case RIGHT:
+    attackPattern = rotateAttackPattern(attackPattern);
+  case UP:
+    break;
+  default:
+    return vector<pair<Position, int>>();
+  }
+
+  vector<pair<Position, int>> attacks;
+  for (int row = 0; row < attackPattern.size(); row++) {
+    for (int col = 0; col < attackPattern[row].size(); col++) {
+      int attack = attackPattern[row][col];
+      if (attack == 0)
+        continue;
+
+      xPos = unit.pos.x;
+      yPos = unit.pos.y;
+      xCoord = xPos + col - 3;
+      yCoord = yPos + row - 3;
+      if (xCoord >= 0 && xCoord < tiles.size() && yCoord >= 0 &&
+          yCoord < tiles.size()) {
+        attacks.append(pair<Position, int>({xCoord, yCoord}, attack));
+      }
+    }
+  }
+
+  return attacks;
+}
+
+vector<vector<int>> rotateAttackPattern(vector<vector<int>> attackPattern) {
+  // TODO: implement
+}
+
+Position getPositionAfterMovement(Position init,
+                                  std::vector<Direction> movementSteps) {
+  // TODO: implement
+}
+
+std::vector<std::vector<int>> basicAttackPattern(AttackPatternType attackType) {
+  // TODO: implement
 }
 
 vector<UnitSetup> Game::getSetup() {
