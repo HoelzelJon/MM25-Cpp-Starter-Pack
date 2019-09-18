@@ -1,0 +1,5 @@
+*
+!Resources/*
+!Makefile
+!*.cpp
+!*.h
