@@ -33,12 +33,18 @@ int main(int argc, char **argv) {
         string gameId = parsedJson["gameId"].get<string>();
         // std::cout << "gameId: " << gameId << std::endl;
         games[gameId] = myGame;
-        vector<UnitSetup> setup = myGame.getSetup();
+
+        vector<UnitSetup> setup;
+        try {
+          setup = myGame.getSetup();
+        } catch (const std::exception& e) {
+          std::cout << "Exception caught: " << e.what() << std::endl;
+        }
 
         json setupJson = setup;
         stringstream ss;
         ss << setupJson;
-        // std::cout << "setupJson: " << setupJson << std::endl;
+        std::cout << "setupJson: " << setupJson << std::endl;
         return ss.str();
       });
 
@@ -49,10 +55,16 @@ int main(int argc, char **argv) {
         // std::cout << parsedJson << std::endl;
         string gameId = parsedJson["gameId"].get<string>();
         // std::cout << "gameId: " << gameId << std::endl;
-        Strategy myGame = games[gameId];
+        Strategy &myGame = games[gameId];
         myGame.updateGame(body);
         // std::cout << "updated game with new body" << std::endl;
-        Decision decision = myGame.doTurn();
+
+        vector<UnitDecision> decision;
+        try {
+          decision = myGame.doTurn();
+        } catch (const std::exception& e) {
+          std::cout << "Exception caught: " << e.what() << std::endl;
+        }
 
         json decisionJson = decision;
         stringstream ss;

@@ -3,21 +3,25 @@
 
 using json = nlohmann::json;
 
-// Method to tell json to convert Direction enum into string.
-NLOHMANN_JSON_SERIALIZE_ENUM(MechMania::Direction,
-                             {{MechMania::Direction::UP, "UP"},
-                              {MechMania::Direction::DOWN, "DOWN"},
-                              {MechMania::Direction::LEFT, "LEFT"},
-                              {MechMania::Direction::RIGHT, "RIGHT"}})
+namespace MechMania {
 
-// Method to tell json to convert TileType enum into string.
-NLOHMANN_JSON_SERIALIZE_ENUM(
-    MechMania::TileType,
-    {
-        {MechMania::TileType::BLANK, "BLANK"},
-        {MechMania::TileType::DESTRUCTABLE, "DESTRUCTABLE"},
-        {MechMania::TileType::INDESTRUCTABLE, "INDESTRUCTABLE"},
-    })
+  // Method to tell json to convert Direction enum into string.
+  NLOHMANN_JSON_SERIALIZE_ENUM(MechMania::Direction,
+                               {{MechMania::Direction::UP, "UP"},
+                                {MechMania::Direction::DOWN, "DOWN"},
+                                {MechMania::Direction::LEFT, "LEFT"},
+                                {MechMania::Direction::RIGHT, "RIGHT"}})
+
+  // Method to tell json to convert TileType enum into string.
+  NLOHMANN_JSON_SERIALIZE_ENUM(
+      MechMania::TileType,
+      {
+          {MechMania::TileType::BLANK, "BLANK"},
+          {MechMania::TileType::DESTRUCTABLE, "DESTRUCTABLE"},
+          {MechMania::TileType::INDESTRUCTABLE, "INDESTRUCTABLE"},
+      })
+}
+
 
 void MechMania::to_json(json &j, const Position &p) {
   j = json{{"x", p.x}, {"y", p.y}};
@@ -36,7 +40,7 @@ void MechMania::from_json(const json &j, Position &p) {
  */
 void MechMania::to_json(json &j, const Unit &u) {
   j = json{{"hp", u.hp},           {"speed", u.speed}, {"attack", u.attack},
-           {"isAlive", u.isAlive}, {"id", u.id},       {"pos", u.pos}};
+           {"id", u.id},       {"pos", u.pos}};
 }
 
 /**
@@ -46,7 +50,6 @@ void MechMania::from_json(const json &j, Unit &u) {
   j.at("hp").get_to(u.hp);
   j.at("speed").get_to(u.speed);
   j.at("attack").get_to(u.attack);
-  j.at("isAlive").get_to(u.isAlive);
   j.at("id").get_to(u.id);
   j.at("pos").get_to(u.pos);
 }
@@ -55,7 +58,7 @@ void MechMania::from_json(const json &j, Unit &u) {
  * Serialize Tile into json.
  */
 void MechMania::to_json(json &j, const Tile &t) {
-  j = json{{"id", t.id}, {"hp", t.hp}, {"unit", t.unit}, {"type", t.type}};
+  j = json{{"id", t.id}, {"hp", t.hp}, {"type", t.type}};
 }
 
 /**
@@ -64,7 +67,6 @@ void MechMania::to_json(json &j, const Tile &t) {
 void MechMania::from_json(const json &j, Tile &t) {
   j.at("id").get_to(t.id);
   j.at("hp").get_to(t.hp);
-  j.at("unit").get_to(t.unit);
   j.at("type").get_to(t.type);
 }
 
@@ -73,8 +75,10 @@ void MechMania::from_json(const json &j, Tile &t) {
  */
 void MechMania::to_json(json &j, const UnitSetup &s) {
   j = json{{"attackPattern", s.attackPattern},
+           {"terrainPattern", s.terrainCreation},
            {"health", s.health},
-           {"speed", s.speed}};
+           {"speed", s.speed},
+           {"unitId", s.unitId}};
 }
 
 /**
@@ -82,26 +86,30 @@ void MechMania::to_json(json &j, const UnitSetup &s) {
  */
 void MechMania::from_json(const json &j, UnitSetup &s) {
   j.at("attackPattern").get_to(s.attackPattern);
+  j.at("terrainPattern").get_to(s.terrainCreation);
   j.at("health").get_to(s.health);
   j.at("speed").get_to(s.speed);
+  j.at("unitId").get_to(s.unitId);
 }
 
 /**
- * Serialize Decision into json.
+ * Serialize UnitDecision into json.
  */
-void MechMania::to_json(json &j, const Decision &d) {
-  j = json{{"priorities", d.priorities},
-           {"movements", d.movements},
-           {"attacks", d.attacks}};
+void MechMania::to_json(json &j, const UnitDecision &d) {
+  j = json{{"priority", d.priority},
+           {"movement", d.movement},
+           {"attack", d.attack},
+           {"unitId", d.unitId}};
 }
 
 /**
- * Deserialize json to Decision.
+ * Deserialize json to UnitDecision.
  */
-void MechMania::from_json(const json &j, Decision &d) {
-  j.at("priorities").get_to(d.priorities);
-  j.at("movements").get_to(d.movements);
-  j.at("attacks").get_to(d.attacks);
+void MechMania::from_json(const json &j, UnitDecision &d) {
+  j.at("priority").get_to(d.priority);
+  j.at("movement").get_to(d.movement);
+  j.at("attack").get_to(d.attack);
+  j.at("unitId").get_to(d.unitId);
 }
 
 /**
