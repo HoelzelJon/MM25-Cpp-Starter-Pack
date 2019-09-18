@@ -9,10 +9,16 @@ using json = nlohmann::json;
 
 namespace MechMania {
 
-/**
- * The number of bots per player.
- */
-static constexpr int NUM_BOTS = 3;
+static constexpr int ATTACK_PATTERN_SIZE = 7;
+static constexpr int BASE_HEALTH = 1;
+static constexpr int BASE_SPEED = 1;
+static constexpr int MAX_POINTS = 24;
+static constexpr int TERRAIN_COST = 2;
+static constexpr int MAX_DAMAGE = 7;
+static constexpr int MAX_STAT = 9;
+static constexpr int DAMAGE_SCALING[7] = {1, 3, 6, 10, 15, 21, 27};
+static constexpr int STAT_SCALING[9] = {1, 2, 4, 6, 9, 12, 16, 20, 25};
+static constexpr int NUM_UNITS = 3;
 
 /**
  * Possible directions that a Unit can go
@@ -35,9 +41,9 @@ enum AttackPatternType { SNIPER, AOE, MELEE };
 struct Position {
   int x;
   int y;
-  Position() : x(-1), y(-1) {};
-  Position(int x_, int y_) : x(x_), y(y_) {};
-  bool operator== (const Position &other) const {
+  Position() : x(-1), y(-1){};
+  Position(int x_, int y_) : x(x_), y(y_){};
+  bool operator==(const Position &other) const {
     return x == other.x && y == other.y;
   }
 };
@@ -49,9 +55,12 @@ struct Unit {
   int hp;
   int speed;
   std::vector<std::vector<int>> attack;
-  bool isAlive;
   int id;
   Position pos;
+  Unit()
+      : hp(0), speed(0),
+        attack(std::vector<std::vector<int>>(7, std::vector<int>(7, 0))),
+        id(-1), pos(){};
 };
 
 /**
@@ -61,7 +70,6 @@ struct Unit {
 struct Tile {
   int id;
   int hp;
-  Unit unit;
   TileType type;
 };
 
@@ -70,18 +78,21 @@ struct Tile {
  */
 struct UnitSetup {
   std::vector<std::vector<int>> attackPattern;
+  std::vector<std::vector<bool>> terrainCreation;
   int health;
   int speed;
+  int unitId;
 };
 
 /**
  * A struct to hold the information regarding the Decision that the player will
  * make each turn using its own Units
  */
-struct Decision {
-  std::vector<int> priorities;
-  std::vector<std::vector<Direction>> movements;
-  std::vector<Direction> attacks;
+struct UnitDecision {
+  int priority;
+  std::vector<Direction> movement;
+  Direction attack;
+  int unitId;
 };
 
 /**
@@ -117,18 +128,19 @@ void to_json(json &j, const UnitSetup &s);
  */
 void from_json(const json &j, UnitSetup &s);
 /**
- * Serialize Decision into json.
+ * Serialize UnitDecision into json.
  */
-void to_json(json &j, const Decision &d);
+void to_json(json &j, const UnitDecision &d);
 /**
- * Deserialize json into Decision.
+ * Deserialize json into UnitDecision.
  */
-void from_json(const json &j, Decision &d);
+void from_json(const json &j, UnitDecision &d);
 
 /**
  * Class that holds the information for one MM25 game.
  */
 class Game {
+protected:
   /**
    * Holds the json for the game, updated every round to replace.
    */
@@ -144,22 +156,22 @@ class Game {
    */
   std::string gameId_;
 
+
+public:
   /**
-   * Checks if a Decision is valid.
+   * Checks if a UnitDecision is valid.
    */
-  static bool isDecisionValid(Decision);
+  static bool isUnitDecisionValid(std::vector<UnitDecision>);
 
   /**
    * Checks if a UnitSetup is valid.
    */
-  static bool isUnitSetupValid(UnitSetup);
+  static bool isUnitSetupValid(std::vector<UnitSetup>);
 
   /**
    * Gets a basic attack pattern given a enum type
    */
   static std::vector<std::vector<int>> basicAttackPattern(AttackPatternType);
-
-public:
   /**
    * default constructor for a Game, sets gameJson to a blank json, playerId
    * to 0 and gameId to a blank string.
@@ -178,19 +190,13 @@ public:
    */
   Game &operator=(const Game &);
   /**
-   * Gets the setups for each unit (UnitSetup). Default behavior will
-   * initialize three Units with 0 attack anywhere within the grid, 5 health,
-   * and 4 speed.
+   * Gets the setups for each unit (UnitSetup).
    */
-  virtual std::vector<UnitSetup> getSetup();
+  virtual std::vector<UnitSetup> getSetup() = 0;
   /**
-   * Gets the Decision that the player makes for that turn.
-   * Default behavior:
-   * Unit 1: UP, UP, UP, UP, attack DOWN
-   * Unit 2: DOWN, DOWN, DOWN, DOWN, attack UP
-   * Unit 3: LEFT, LEFT, LEFT, LEFT, attack LEFT
+   * Gets the UnitDecision that the player makes for that turn.
    */
-  virtual Decision doTurn();
+  virtual std::vector<UnitDecision> doTurn() = 0;
 
   /**
    * private function called by server to update the game json every turn.
@@ -224,19 +230,18 @@ public:
    * given by tilesToAvoid
    */
   std::vector<Direction> pathTo(Position, Position, std::vector<Position>);
+  std::vector<Direction> pathTo(Position, Position);
 
-
-  std::vector<std::pair<Position, int>> getPositionsOfAttackPattern(int unitId, Direction dir);
-
+  std::vector<std::pair<Position, int>>
+  getPositionsOfAttackPattern(int unitId, Direction dir);
 
   Position getPositionAfterMovement(Position, std::vector<Direction>);
 
-
   Unit getUnit(int unitId);
 
-
 private:
-  std::vector<std::vector<int>> rotateAttackPattern(std::vector<std::vector<int>>);
+  std::vector<std::vector<int>>
+  rotateAttackPattern(std::vector<std::vector<int>>);
 };
 
 } // namespace MechMania
@@ -247,10 +252,6 @@ private:
 std::ostream &operator<<(std::ostream &os, const MechMania::UnitSetup &s);
 
 /**
- * operator<< overload to convert Decision to a readable format.
+ * operator<< overload to convert UnitDecision to a readable format.
  */
-std::ostream &operator<<(std::ostream &os, const MechMania::Decision &s);
-
-// bool operator==(const MechMania::Position &lhs, const MechMania::Position &rhs) {
-//   return lhs.x == rhs.x && lhs.y == rhs.y;
-// }
+std::ostream &operator<<(std::ostream &os, const MechMania::UnitDecision &s);

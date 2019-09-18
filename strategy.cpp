@@ -10,24 +10,21 @@ using namespace MechMania;
 
 vector<UnitSetup> Strategy::getSetup() {
   vector<UnitSetup> units;
-  for (int i = 0; i < NUM_BOTS; i++) {
-    vector<vector<int>> attackPattern(7, vector<int>(7));
+  int unitId = playerId_ == 1 ? 1 : 4;
+
+  for (int i = 0; i < NUM_UNITS; i++) {
+    vector<vector<int>> attackPattern(7, vector<int>(7, 0));
+    vector<vector<bool>> terrainCreation(7, vector<bool>(7, false));
     attackPattern[3][4] = 1;
     int health = 5;
     int speed = 4;
-    UnitSetup unitSetup = {attackPattern, health, speed};
+    UnitSetup unitSetup = {attackPattern, terrainCreation, health, speed, unitId++};
     units.push_back(unitSetup);
   }
 
   return units;
 }
 
-Decision Strategy::doTurn() {
-  vector<int> priorities = {1, 2, 3};
-  vector<vector<Direction>> movements = {
-      {UP, UP, UP, UP}, {DOWN, DOWN, DOWN, DOWN}, {LEFT, LEFT, LEFT}};
-  vector<Direction> attacks = {DOWN, UP, LEFT};
-
-  Decision decision = {priorities, movements, attacks};
-  return decision;
+vector<UnitDecision> Strategy::doTurn() {
+  return vector<UnitDecision>();
 }

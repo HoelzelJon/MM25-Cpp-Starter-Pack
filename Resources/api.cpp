@@ -1,16 +1,18 @@
 #include "../api.h"
 #include "json.hpp"
 
-#include <iostream>
-#include <string>
-#include <queue>
 #include <algorithm>
+#include <iostream>
+#include <deque>
+#include <set>
+#include <string>
 
 using json = nlohmann::json;
+using std::pair;
+using std::deque;
+using std::set;
 using std::string;
 using std::vector;
-using std::pair;
-using std::queue;
 using namespace MechMania;
 
 Game::Game(string gameJson, int playerId)
@@ -45,41 +47,51 @@ vector<Unit> Game::convertJsonToUnits(string unitsJson) {
 
 vector<Unit> Game::getMyUnits() {
   if (playerId_ == 1) {
-    return gameJson_["p1Units"].get<vector<Unit>>();
+    return { getUnit(1), getUnit(2), getUnit(3) };
   } else {
-    return gameJson_["p2Units"].get<vector<Unit>>();
+    return { getUnit(4), getUnit(5), getUnit(6) };
   }
 }
 
 vector<Unit> Game::getEnemyUnits() {
   if (playerId_ == 1) {
-    return gameJson_["p2Units"].get<vector<Unit>>();
+    return { getUnit(1), getUnit(2), getUnit(3) };
   } else {
-    return gameJson_["p1Units"].get<vector<Unit>>();
+    return { getUnit(4), getUnit(5), getUnit(6) };
   }
 }
 
 Tile Game::getTile(Position p) {
-  return gameJson_["map"]["tiles"].get<vector<vector<Tile>>>().at(p.x).at(p.y);
+  return gameJson_["tiles"].get<vector<vector<Tile>>>()[p.x][p.y];
 }
 
 Unit Game::getUnitAt(Position p) {
-  Tile tile = getTile(p);
-  return tile.unit;
+  for (Unit unit : gameJson_["units"].get<vector<Unit>>()) {
+    if (unit.pos == p) {
+      return unit;
+    }
+  }
+  return Unit();
+}
+
+std::vector<Direction> Game::pathTo(Position start, Position end) {
+  return pathTo(start, end, vector<Position>());
 }
 
 vector<Direction> Game::pathTo(Position start, Position end,
                                vector<Position> tilesToAvoid) {
-  queue<pair<Position, vector<Direction>>> q;
-  q.push(std::make_pair(Position(-1, -1), vector<Direction>()));
+  deque<pair<Position, vector<Direction>>> q;
+  q.push_front(std::make_pair(start, vector<Direction>()));
 
+  std::cout << "in pathTo, on line " << __LINE__ << std::endl;
   vector<vector<Tile>> tiles =
-      gameJson_["map"]["tiles"].get<vector<vector<Tile>>>();
-  vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size()));
+      gameJson_["tiles"].get<vector<vector<Tile>>>();
+  vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size(), false));
 
+  std::cout << "in pathTo, on line " << __LINE__ << std::endl;
   while (!q.empty()) {
     pair<Position, vector<Direction>> p = q.front();
-    q.pop();
+    q.pop_front();
     Position pos = p.first;
     vector<Direction> dirs = p.second;
 
@@ -100,27 +112,27 @@ vector<Direction> Game::pathTo(Position start, Position end,
           getTile(left).type != TileType::BLANK)) {
       vector<Direction> leftDirs(dirs);
       leftDirs.push_back(Direction::LEFT);
-      q.push(pair<Position, vector<Direction>>(left, leftDirs));
+      q.push_front(pair<Position, vector<Direction>>(left, leftDirs));
     }
 
     Position right = {pos.x + 1, pos.y};
-    if (!(right.x > tiles.size() ||
+    if (!(right.x > (int)tiles.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), right) !=
               tilesToAvoid.end() ||
           getTile(right).type != TileType::BLANK)) {
       vector<Direction> rightDirs(dirs);
       rightDirs.push_back(Direction::LEFT);
-      q.push(pair<Position, vector<Direction>>(right, rightDirs));
+      q.push_front(pair<Position, vector<Direction>>(right, rightDirs));
     }
 
     Position up = {pos.x, pos.y + 1};
-    if (!(up.y > tiles.size() ||
+    if (!(up.y > (int)tiles.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), up) !=
               tilesToAvoid.end() ||
           getTile(up).type != TileType::BLANK)) {
       vector<Direction> upDirs(dirs);
       upDirs.push_back(Direction::LEFT);
-      q.push(pair<Position, vector<Direction>>(up, upDirs));
+      q.push_front(pair<Position, vector<Direction>>(up, upDirs));
     }
 
     Position down = {pos.x, pos.y - 1};
@@ -130,25 +142,85 @@ vector<Direction> Game::pathTo(Position start, Position end,
           getTile(down).type != TileType::BLANK)) {
       vector<Direction> downDirs(dirs);
       downDirs.push_back(Direction::LEFT);
-      q.push(pair<Position, vector<Direction>>(down, downDirs));
+      q.push_front(pair<Position, vector<Direction>>(down, downDirs));
     }
   }
 
   return vector<Direction>();
 }
 
-bool Game::isDecisionValid(Decision d) {
-  // TODO: implement
-  return false;
+bool Game::isUnitDecisionValid(vector<UnitDecision> decisions) {
+  set<int> uniquePriorities;
+  for (UnitDecision d : decisions) {
+    if (uniquePriorities.find(d.priority) != uniquePriorities.end() ||
+        (d.priority != 1 && d.priority != 2 && d.priority != 3)) {
+      return false;
+    }
+    uniquePriorities.insert(d.priority);
+  }
+
+  return true;
 }
 
-bool Game::isUnitSetupValid(UnitSetup s) {
-  // TODO: implement
-  return false;
+bool Game::isUnitSetupValid(vector<UnitSetup> ss) {
+  for (UnitSetup s : ss) {
+    if (s.health < BASE_HEALTH || s.speed < BASE_SPEED ||
+        (int)s.attackPattern.size() != ATTACK_PATTERN_SIZE ||
+        (int)s.terrainCreation.size() != ATTACK_PATTERN_SIZE) {
+      return false;
+    }
+
+    for (int i = 0; i < ATTACK_PATTERN_SIZE; i++) {
+      if ((int)s.attackPattern[i].size() != ATTACK_PATTERN_SIZE ||
+          (int)s.terrainCreation[i].size() != ATTACK_PATTERN_SIZE) {
+        return false;
+      }
+    }
+
+    int sum = 0;
+    for (vector<int> &row : s.attackPattern) {
+      for (int cell : row) {
+        if (cell > 1) {
+          if (cell >= MAX_DAMAGE) {
+            sum = MAX_POINTS + 1;
+            break;
+          } else {
+            sum += DAMAGE_SCALING[cell - 1];
+          }
+
+        } else if (cell < 0) {
+          return false;
+        }
+
+        sum += cell;
+      }
+    }
+
+    for (vector<bool> &row : s.terrainCreation) {
+      for (bool creatingTerrain : row) {
+        if (creatingTerrain) {
+          sum += TERRAIN_COST;
+        }
+      }
+    }
+
+    if (sum > MAX_POINTS) {
+      return false;
+
+    } else if (s.health >= MAX_STAT || s.speed >= MAX_STAT) {
+      return false;
+
+    } else if (STAT_SCALING[s.health - 1] + STAT_SCALING[s.speed - 1] + sum >
+               MAX_POINTS) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
-vector<pair<Position, int>>
-Game::getPositionsOfAttackPattern(int unitId, Direction dir) {
+vector<pair<Position, int>> Game::getPositionsOfAttackPattern(int unitId,
+                                                              Direction dir) {
   Unit unit = getUnit(unitId);
   vector<vector<int>> &attackPattern = unit.attack;
   switch (dir) {
@@ -164,11 +236,11 @@ Game::getPositionsOfAttackPattern(int unitId, Direction dir) {
     return vector<pair<Position, int>>();
   }
   vector<vector<Tile>> tiles =
-      gameJson_["map"]["tiles"].get<vector<vector<Tile>>>();
+      gameJson_["tiles"].get<vector<vector<Tile>>>();
 
   vector<pair<Position, int>> attacks;
-  for (int row = 0; row < attackPattern.size(); row++) {
-    for (int col = 0; col < attackPattern[row].size(); col++) {
+  for (int row = 0; row < (int)attackPattern.size(); row++) {
+    for (int col = 0; col < (int)attackPattern[row].size(); col++) {
       int attack = attackPattern[row][col];
       if (attack == 0)
         continue;
@@ -177,8 +249,8 @@ Game::getPositionsOfAttackPattern(int unitId, Direction dir) {
       int yPos = unit.pos.y;
       int xCoord = xPos + col - 3;
       int yCoord = yPos + row - 3;
-      if (xCoord >= 0 && xCoord < tiles.size() && yCoord >= 0 &&
-          yCoord < tiles.size()) {
+      if (xCoord >= 0 && xCoord < (int)tiles.size() && yCoord >= 0 &&
+          yCoord < (int)tiles.size()) {
         attacks.push_back(std::make_pair(Position(xCoord, yCoord), attack));
       }
     }
@@ -187,42 +259,91 @@ Game::getPositionsOfAttackPattern(int unitId, Direction dir) {
   return attacks;
 }
 
-vector<vector<int>> Game::rotateAttackPattern(vector<vector<int>> attackPattern) {
-  // TODO: implement
+vector<vector<int>>
+Game::rotateAttackPattern(vector<vector<int>> attackPattern) {
+  // https://stackoverflow.com/questions/39668537/rotate-2d-vector-90-degrees-clockwise
+  int N = attackPattern.size();
+
+  for (int x = 0; x < N / 2; x++) {
+    for (int y = x; y < N - x - 1; y++) {
+      // store current cell in attackPattern variable
+      int tmp = attackPattern[x][y];
+
+      // move values from right to top
+      attackPattern[x][y] = attackPattern[y][N - 1 - x];
+
+      // move values from bottom to right
+      attackPattern[y][N - 1 - x] = attackPattern[N - 1 - x][N - 1 - y];
+
+      // move values from left to bottom
+      attackPattern[N - 1 - x][N - 1 - y] = attackPattern[N - 1 - y][x];
+
+      // assign attackPattern to left
+      attackPattern[N - 1 - y][x] = tmp;
+    }
+  }
+
+  return attackPattern;
 }
 
 Position Game::getPositionAfterMovement(Position init,
-                                  std::vector<Direction> movementSteps) {
-  // TODO: implement
+                                        std::vector<Direction> movementSteps) {
+  int dx = 0, dy = 0;
+  for (Direction movement : movementSteps) {
+    switch (movement) {
+    case LEFT:
+      dx -= 1;
+      break;
+    case RIGHT:
+      dx += 1;
+      break;
+    case DOWN:
+      dy -= 1;
+      break;
+    case UP:
+      dy += 1;
+      break;
+    }
+  }
+
+  return Position(init.x + dx, init.y + dy);
 }
 
-std::vector<std::vector<int>> Game::basicAttackPattern(AttackPatternType attackType) {
-  // TODO: implement
+vector<vector<int>> Game::basicAttackPattern(AttackPatternType attackType) {
+  vector<vector<int>> defaultAttack = vector<vector<int>>(7, vector<int>(7, 0));
+  switch (attackType) {
+  case SNIPER:
+    // four on each direction
+    defaultAttack[4][0] = 2;
+    defaultAttack[0][4] = 2;
+    defaultAttack[4][6] = 2;
+    defaultAttack[6][4] = 2;
+    return defaultAttack;
+  case AOE:
+    // eight immediately surrounding bot
+    defaultAttack[3][3] = 1;
+    defaultAttack[5][5] = 1;
+    defaultAttack[3][5] = 1;
+    defaultAttack[5][3] = 1;
+    return defaultAttack;
+  case MELEE:
+    // four immediately surrounding bot
+    defaultAttack[3][4] = 2;
+    defaultAttack[4][3] = 2;
+    defaultAttack[5][4] = 2;
+    defaultAttack[4][5] = 2;
+    return defaultAttack;
+
+  default:
+    return vector<vector<int>>(7, vector<int>(7, 0));
+  }
 }
 
 Unit Game::getUnit(int unitId) {
-  // TODO: implement
-}
-
-vector<UnitSetup> Game::getSetup() {
-  vector<UnitSetup> units;
-  for (int i = 0; i < NUM_BOTS; i++) {
-    vector<vector<int>> attackPattern(7, vector<int>(7));
-    int health = 5;
-    int speed = 4;
-    UnitSetup unitSetup = {attackPattern, health, speed};
-    units.push_back(unitSetup);
+  for (Unit &unit : gameJson_["units"].get<vector<Unit>>()) {
+    if (unit.id == unitId) {
+      return unit;
+    }
   }
-
-  return units;
-}
-
-Decision Game::doTurn() {
-  vector<int> priorities = {1, 2, 3};
-  vector<vector<Direction>> movements = {
-      {UP, UP, UP, UP}, {DOWN, DOWN, DOWN, DOWN}, {LEFT, LEFT, LEFT, LEFT}};
-  vector<Direction> attacks = {DOWN, UP, LEFT};
-
-  Decision decision = {priorities, movements, attacks};
-  return decision;
+  return Unit();
 }

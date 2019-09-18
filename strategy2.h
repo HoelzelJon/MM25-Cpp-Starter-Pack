@@ -7,5 +7,5 @@ public:
   Strategy2(const Strategy2 &other) : Game(other){};
   Strategy2(std::string gameId, int playerId) : Game(gameId, playerId){};
   std::vector<MechMania::UnitSetup> getSetup();
-  MechMania::Decision doTurn();
+  std::vector<MechMania::UnitDecision> doTurn();
 };
