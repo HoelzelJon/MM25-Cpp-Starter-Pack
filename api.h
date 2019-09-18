@@ -24,12 +24,22 @@ enum Direction { UP, DOWN, LEFT, RIGHT };
 enum TileType { BLANK, DESTRUCTABLE, INDESTRUCTABLE };
 
 /**
+ * Different possible attack pattern types
+ */
+enum AttackPatternType { SNIPER, AOE, MELEE };
+
+/**
  * A Position struct that holds information for a x and y coordinate that can
  * be passed into other functions.
  */
 struct Position {
   int x;
   int y;
+  Position() : x(-1), y(-1) {};
+  Position(int x_, int y_) : x(x_), y(y_) {};
+  bool operator== (const Position &other) const {
+    return x == other.x && y == other.y;
+  }
 };
 
 /**
@@ -144,6 +154,11 @@ class Game {
    */
   static bool isUnitSetupValid(UnitSetup);
 
+  /**
+   * Gets a basic attack pattern given a enum type
+   */
+  static std::vector<std::vector<int>> basicAttackPattern(AttackPatternType);
+
 public:
   /**
    * default constructor for a Game, sets gameJson to a blank json, playerId
@@ -208,7 +223,20 @@ public:
    * Gives a path from a Position to another Position, while avoiding Tiles,
    * given by tilesToAvoid
    */
-  std::vector<Direction> pathTo(Position, Position, std::vector<Tile>);
+  std::vector<Direction> pathTo(Position, Position, std::vector<Position>);
+
+
+  std::vector<std::pair<Position, int>> getPositionsOfAttackPattern(int unitId, Direction dir);
+
+
+  Position getPositionAfterMovement(Position, std::vector<Direction>);
+
+
+  Unit getUnit(int unitId);
+
+
+private:
+  std::vector<std::vector<int>> rotateAttackPattern(std::vector<std::vector<int>>);
 };
 
 } // namespace MechMania
@@ -222,3 +250,7 @@ std::ostream &operator<<(std::ostream &os, const MechMania::UnitSetup &s);
  * operator<< overload to convert Decision to a readable format.
  */
 std::ostream &operator<<(std::ostream &os, const MechMania::Decision &s);
+
+// bool operator==(const MechMania::Position &lhs, const MechMania::Position &rhs) {
+//   return lhs.x == rhs.x && lhs.y == rhs.y;
+// }
