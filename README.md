@@ -19,7 +19,7 @@ Explanation:
 - `maps1.csv` is the map of the game
 - `name of player ___` is a display name for each player
 - each address is the locally hosted address of the bots that were ran in the section above
-  - when using this starter pack, the address is `**https://0.0.0.0:PORTNUMBER/**`
+  - when using this starter pack, the address is `https://0.0.0.0:PORTNUMBER/`
   - remember to change out `PORTNUMBER` to the ports that were set above
   - this can be exchanged for `HUMAN` to bring up a visual version
 - `STDOUT` means to print the output of the game engine to standard out
