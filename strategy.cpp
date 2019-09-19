@@ -33,6 +33,10 @@ vector<UnitDecision> Strategy::doTurn() {
   vector<UnitDecision> decisions;
   int priority = 1;
   for (Unit unit : Game::getMyUnits()) {
+    if (unit.id == -1) {
+      // bot is dead
+      continue;
+    }
     // choose a random opponent
     vector<Unit> opponentUnits = Game::getEnemyUnits();
     int randIndex = std::rand() % opponentUnits.size() + 1;

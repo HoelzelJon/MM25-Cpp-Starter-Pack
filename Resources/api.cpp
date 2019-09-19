@@ -62,7 +62,7 @@ vector<Unit> Game::getEnemyUnits() {
 }
 
 Tile Game::getTile(Position p) {
-  return gameJson_["tiles"].get<vector<vector<Tile>>>()[p.x][p.y];
+  return gameJson_["tiles"].get<vector<vector<Tile>>>()[p.y][p.x];
 }
 
 Unit Game::getUnitAt(Position p) {
@@ -88,20 +88,31 @@ vector<Direction> Game::pathTo(Position start, Position end,
   vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size(), false));
 
   while (!q.empty()) {
+    std::cout << q.size() << std::endl;
     pair<Position, vector<Direction>> p = q.front();
     q.pop_front();
     Position pos = p.first;
     vector<Direction> dirs = p.second;
+
+    if (pos.x < 0 || pos.y < 0) {
+      continue;
+    }
+
+    std::cout << "on line " << __LINE__ << std::endl;
+    std::cout << pos.x << " " << pos.y << std::endl;
+    std::cout << dirs.size() << std::endl;
 
     if (visited[pos.y][pos.x]) {
       continue;
     } else {
       visited[pos.y][pos.x] = true;
     }
+    std::cout << "on line " << __LINE__ << std::endl;
 
     if (pos == end) {
       return dirs;
     }
+    std::cout << "on line " << __LINE__ << std::endl;
 
     Position left = {pos.x - 1, pos.y};
     if (!(left.x < 0 ||
@@ -110,28 +121,31 @@ vector<Direction> Game::pathTo(Position start, Position end,
           getTile(left).type != TileType::BLANK)) {
       vector<Direction> leftDirs(dirs);
       leftDirs.push_back(Direction::LEFT);
-      q.push_front(pair<Position, vector<Direction>>(left, leftDirs));
+      q.push_front(std::make_pair(left, leftDirs));
     }
+    std::cout << "on line " << __LINE__ << std::endl;
 
     Position right = {pos.x + 1, pos.y};
-    if (!(right.x > (int)tiles.size() ||
+    if (!(right.x >= (int)tiles.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), right) !=
               tilesToAvoid.end() ||
           getTile(right).type != TileType::BLANK)) {
       vector<Direction> rightDirs(dirs);
       rightDirs.push_back(Direction::LEFT);
-      q.push_front(pair<Position, vector<Direction>>(right, rightDirs));
+      q.push_front(std::make_pair(right, rightDirs));
     }
+    std::cout << "on line " << __LINE__ << std::endl;
 
     Position up = {pos.x, pos.y + 1};
-    if (!(up.y > (int)tiles.size() ||
+    if (!(up.y >= (int)tiles.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), up) !=
               tilesToAvoid.end() ||
           getTile(up).type != TileType::BLANK)) {
       vector<Direction> upDirs(dirs);
       upDirs.push_back(Direction::LEFT);
-      q.push_front(pair<Position, vector<Direction>>(up, upDirs));
+      q.push_front(std::make_pair(up, upDirs));
     }
+    std::cout << "on line " << __LINE__ << std::endl;
 
     Position down = {pos.x, pos.y - 1};
     if (!(down.y < 0 ||
@@ -140,8 +154,9 @@ vector<Direction> Game::pathTo(Position start, Position end,
           getTile(down).type != TileType::BLANK)) {
       vector<Direction> downDirs(dirs);
       downDirs.push_back(Direction::LEFT);
-      q.push_front(pair<Position, vector<Direction>>(down, downDirs));
+      q.push_front(std::make_pair(down, downDirs));
     }
+    std::cout << "on line " << __LINE__ << std::endl;
   }
 
   return vector<Direction>();

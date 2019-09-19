@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
         vector<UnitSetup> setup;
         try {
           setup = myGame.getSetup();
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
           std::cout << "Exception caught: " << e.what() << std::endl;
         }
 
@@ -62,14 +62,14 @@ int main(int argc, char **argv) {
         vector<UnitDecision> decision;
         try {
           decision = myGame.doTurn();
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
           std::cout << "Exception caught: " << e.what() << std::endl;
         }
 
         json decisionJson = decision;
         stringstream ss;
         ss << decisionJson;
-        // std::cout << "decisionJson: " << decisionJson << std::endl;
+        std::cout << "decisionJson: " << decisionJson << std::endl;
         return ss.str();
       });
 
@@ -83,6 +83,8 @@ int main(int argc, char **argv) {
         // << std::endl;
         return "Game successfully exited.";
       });
+
+  CROW_ROUTE(app, "/health")([] { return 200; });
 
   if (argc != 2) {
     std::cout << "please run ./server with 1 argument: the port number to "
