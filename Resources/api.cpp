@@ -16,28 +16,31 @@ using std::vector;
 using namespace MechMania;
 
 Game::Game(string gameJson, int playerId)
-    : gameJson_(gameJson), playerId_(playerId) {
+    : playerId_(playerId) {
   // std::cout << "in Game::Game(string, int)" << std::endl;
   auto parsedJson = json::parse(gameJson);
-  gameId_ = parsedJson["gameId"].get<string>();
+  playerId_ = parsedJson["playerNum"].get<int>();
 }
 
 Game::Game(const Game &other)
-    : gameJson_(other.gameJson_), playerId_(other.playerId_) {
+    : tiles_(other.tiles_), units_(other.units_), playerId_(other.playerId_) {
   // std::cout << "in Game::Game(Game)" << std::endl;
 }
 
 Game &Game::operator=(const Game &other) {
   // std::cout << "in Game::operator=(Game)" << std::endl;
-  gameJson_ = other.gameJson_;
+  tiles_ = other.tiles_;
+  units_ = other.units_;
   playerId_ = other.playerId_;
-  gameId_ = other.gameId_;
   return *this;
 }
 
 // updates the game json. Called every turn
 void Game::updateGame(string setGameJson) {
-  gameJson_ = json::parse(setGameJson);
+  auto gameJson = json::parse(setGameJson);
+  tiles_ = gameJson["tiles"].get<vector<vector<Tile>>>();
+  units_ = gameJson["units"].get<vector<Unit>>();
+  playerId_ = gameJson["playerNum"].get<int>();
 }
 
 vector<Unit> Game::convertJsonToUnits(string unitsJson) {
@@ -62,11 +65,11 @@ vector<Unit> Game::getEnemyUnits() {
 }
 
 Tile Game::getTile(Position p) {
-  return gameJson_["tiles"].get<vector<vector<Tile>>>()[p.y][p.x];
+  return tiles_[p.x][p.y];
 }
 
 Unit Game::getUnitAt(Position p) {
-  for (Unit unit : gameJson_["units"].get<vector<Unit>>()) {
+  for (Unit unit : units_) {
     if (unit.pos == p) {
       return unit;
     }
@@ -83,9 +86,7 @@ vector<Direction> Game::pathTo(Position start, Position end,
   deque<pair<Position, vector<Direction>>> q;
   q.push_front(std::make_pair(start, vector<Direction>()));
 
-  vector<vector<Tile>> tiles =
-      gameJson_["tiles"].get<vector<vector<Tile>>>();
-  vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size(), false));
+  vector<vector<bool>> visited(tiles_.size(), vector<bool>(tiles_.size(), false));
 
   while (!q.empty()) {
     pair<Position, vector<Direction>> p = q.front();
@@ -97,10 +98,10 @@ vector<Direction> Game::pathTo(Position start, Position end,
       continue;
     }
 
-    if (visited[pos.y][pos.x]) {
+    if (visited[pos.x][pos.y]) {
       continue;
     } else {
-      visited[pos.y][pos.x] = true;
+      visited[pos.x][pos.y] = true;
     }
 
     if (pos == end) {
@@ -118,7 +119,7 @@ vector<Direction> Game::pathTo(Position start, Position end,
     }
 
     Position right = {pos.x + 1, pos.y};
-    if (!(right.x >= (int)tiles.size() ||
+    if (!(right.x >= (int)tiles_.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), right) !=
               tilesToAvoid.end() ||
           getTile(right).type != TileType::BLANK)) {
@@ -128,7 +129,7 @@ vector<Direction> Game::pathTo(Position start, Position end,
     }
 
     Position up = {pos.x, pos.y + 1};
-    if (!(up.y >= (int)tiles.size() ||
+    if (!(up.y >= (int)tiles_.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), up) !=
               tilesToAvoid.end() ||
           getTile(up).type != TileType::BLANK)) {
@@ -167,8 +168,6 @@ vector<pair<Position, int>> Game::getPositionsOfAttackPattern(int unitId,
   default:
     return vector<pair<Position, int>>();
   }
-  vector<vector<Tile>> tiles =
-      gameJson_["tiles"].get<vector<vector<Tile>>>();
 
   vector<pair<Position, int>> attacks;
   for (int row = 0; row < (int)attackPattern.size(); row++) {
@@ -181,8 +180,8 @@ vector<pair<Position, int>> Game::getPositionsOfAttackPattern(int unitId,
       int yPos = unit.pos.y;
       int xCoord = xPos + col - 3;
       int yCoord = yPos + row - 3;
-      if (xCoord >= 0 && xCoord < (int)tiles.size() && yCoord >= 0 &&
-          yCoord < (int)tiles.size()) {
+      if (xCoord >= 0 && xCoord < (int)tiles_.size() && yCoord >= 0 &&
+          yCoord < (int)tiles_.size()) {
         attacks.push_back(std::make_pair(Position(xCoord, yCoord), attack));
       }
     }
@@ -272,7 +271,7 @@ vector<vector<int>> Game::basicAttackPattern(AttackPatternType attackType) {
 }
 
 Unit Game::getUnit(int unitId) {
-  for (Unit &unit : gameJson_["units"].get<vector<Unit>>()) {
+  for (Unit &unit : units_) {
     if (unit.id == unitId) {
       return unit;
     }

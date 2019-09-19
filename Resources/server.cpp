@@ -17,7 +17,7 @@ using std::stringstream;
 using std::vector;
 using namespace MechMania;
 
-int main(int argc, char **argv) {
+int main() {
   map<string, Strategy> games;
 
   crow::SimpleApp app;
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
       });
 
   CROW_ROUTE(app, "/health")([] { return 200; });
- 
+
   long port = strtol(std::getenv("PORT"), nullptr, 0);
   app.port(port).multithreaded().run();
 }

@@ -142,23 +142,23 @@ void from_json(const json &j, UnitDecision &d);
 class Game {
 protected:
   /**
-   * Holds the json for the game, updated every round to replace.
+   * the 2d vector of tiles in the game, updated every turn
    */
-  nlohmann::json gameJson_;
+  std::vector<std::vector<Tile>> tiles_;
+
+  /**
+   * the std::vector of units, updated every turn
+   */
+  std::vector<Unit> units_;
+
   /**
    * id of the current player, set in the beginning and used throughout
    * to make sure same player's units are being gathered every time.
    */
   int playerId_;
-  /**
-   * ID of the game, as a string. This uniquely identifies each game, so
-   * multiple games can be played using one server.
-   */
-  std::string gameId_;
 
 
 public:
-
   /**
    * Gets a basic attack pattern given a enum type
    */
@@ -167,7 +167,7 @@ public:
    * default constructor for a Game, sets gameJson to a blank json, playerId
    * to 0 and gameId to a blank string.
    */
-  Game() : gameJson_({}), playerId_(0), gameId_(""){};
+  Game() : playerId_(0) {};
   /**
    * Game constructor that uses a gameId and a playerId as inputs.
    */

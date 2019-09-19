@@ -5,4 +5,4 @@ WORKDIR /app
 COPY . .
 RUN make clean
 RUN make server
-CMD ./server 3000
+CMD ./server
