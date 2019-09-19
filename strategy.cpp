@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include <set>
+#include <string>
 #include <vector>
 
 using std::set;
+using std::string;
 using std::vector;
 
 using namespace MechMania;
