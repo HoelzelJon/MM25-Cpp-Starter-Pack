@@ -85,13 +85,7 @@ int main(int argc, char **argv) {
       });
 
   CROW_ROUTE(app, "/health")([] { return 200; });
-
-  if (argc != 2) {
-    std::cout << "please run ./server with 1 argument: the port number to "
-                 "host on"
-              << std::endl;
-    return 1;
-  }
-  long port = strtol(argv[1], nullptr, 0);
+ 
+  long port = strtol(std::getenv("PORT"), nullptr, 0);
   app.port(port).multithreaded().run();
 }
