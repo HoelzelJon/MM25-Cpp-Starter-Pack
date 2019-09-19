@@ -2,6 +2,13 @@
 
 ## Requirements
 docker
+the contents of this directory
+
+## Cloning the repo
+```
+git clone https://github.com/HoelzelJon/MM25-Cpp-Starter-Pack
+cd MM25-Cpp-Starter-Pack
+```
 
 ## Instructions for running bot server
 ```
