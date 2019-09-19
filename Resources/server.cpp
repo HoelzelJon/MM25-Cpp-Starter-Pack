@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
       .methods("POST"_method)([&games](const crow::request &req) {
         string body = req.body;
         json parsedJson = json::parse(body);
-        // std::cout << parsedJson << std::endl;
+        std::cout << parsedJson << std::endl;
         string gameId = parsedJson["gameId"].get<string>();
         // std::cout << "gameId: " << gameId << std::endl;
         Strategy &myGame = games[gameId];
