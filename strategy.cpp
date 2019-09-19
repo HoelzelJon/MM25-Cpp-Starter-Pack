@@ -75,11 +75,11 @@ vector<UnitDecision> Strategy::doTurn() {
   return decisions;
 }
 
-void Strategy::onGameOver(int winner) {
-  if (winner == 0) {
+void Strategy::onGameOver(string result) {
+  if (result == "TIE") {
     // on game tie
     std::cout << "the game ended in a tie" << std::endl;
-  } else if (winner == playerId_) {
+  } else if (result == "WIN") {
     // you won
     std::cout << "you won!" << std::endl;
   } else {

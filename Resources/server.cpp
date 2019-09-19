@@ -77,14 +77,13 @@ int main() {
         string body = req.body;
         // std::cout << body << std::endl;
         json parsedJson = json::parse(body);
-        int winner = parsedJson["winner"].get<int>();
+        string result = parsedJson["result"].get<string>();
         string gameId = parsedJson["gameId"].get<string>();
         Strategy &myGame = games[gameId];
-        myGame.onGameOver(winner);
+        myGame.onGameOver(result);
         games.erase(gameId);
 
         json gameOverJson;
-        gameOverJson["status"] = 200;
         gameOverJson["message"] = "Game successfully exited";
         stringstream ss;
         ss << gameOverJson;
