@@ -158,15 +158,6 @@ protected:
 
 
 public:
-  /**
-   * Checks if a UnitDecision is valid.
-   */
-  static bool isUnitDecisionValid(std::vector<UnitDecision>);
-
-  /**
-   * Checks if a UnitSetup is valid.
-   */
-  static bool isUnitSetupValid(std::vector<UnitSetup>);
 
   /**
    * Gets a basic attack pattern given a enum type

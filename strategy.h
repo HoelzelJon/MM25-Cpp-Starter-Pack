@@ -2,6 +2,8 @@
 #include "api.h"
 
 class Strategy : public MechMania::Game {
+  static bool isValidUnitSetup(std::vector<MechMania::UnitSetup>);
+  static bool isValidUnitDecision(std::vector<MechMania::UnitDecision>);
 public:
   Strategy() : Game(){};
   Strategy(const Strategy &other) : Game(other){};

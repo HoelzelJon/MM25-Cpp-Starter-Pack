@@ -83,12 +83,10 @@ vector<Direction> Game::pathTo(Position start, Position end,
   deque<pair<Position, vector<Direction>>> q;
   q.push_front(std::make_pair(start, vector<Direction>()));
 
-  std::cout << "in pathTo, on line " << __LINE__ << std::endl;
   vector<vector<Tile>> tiles =
       gameJson_["tiles"].get<vector<vector<Tile>>>();
   vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size(), false));
 
-  std::cout << "in pathTo, on line " << __LINE__ << std::endl;
   while (!q.empty()) {
     pair<Position, vector<Direction>> p = q.front();
     q.pop_front();
@@ -147,76 +145,6 @@ vector<Direction> Game::pathTo(Position start, Position end,
   }
 
   return vector<Direction>();
-}
-
-bool Game::isUnitDecisionValid(vector<UnitDecision> decisions) {
-  set<int> uniquePriorities;
-  for (UnitDecision d : decisions) {
-    if (uniquePriorities.find(d.priority) != uniquePriorities.end() ||
-        (d.priority != 1 && d.priority != 2 && d.priority != 3)) {
-      return false;
-    }
-    uniquePriorities.insert(d.priority);
-  }
-
-  return true;
-}
-
-bool Game::isUnitSetupValid(vector<UnitSetup> ss) {
-  for (UnitSetup s : ss) {
-    if (s.health < BASE_HEALTH || s.speed < BASE_SPEED ||
-        (int)s.attackPattern.size() != ATTACK_PATTERN_SIZE ||
-        (int)s.terrainCreation.size() != ATTACK_PATTERN_SIZE) {
-      return false;
-    }
-
-    for (int i = 0; i < ATTACK_PATTERN_SIZE; i++) {
-      if ((int)s.attackPattern[i].size() != ATTACK_PATTERN_SIZE ||
-          (int)s.terrainCreation[i].size() != ATTACK_PATTERN_SIZE) {
-        return false;
-      }
-    }
-
-    int sum = 0;
-    for (vector<int> &row : s.attackPattern) {
-      for (int cell : row) {
-        if (cell > 1) {
-          if (cell >= MAX_DAMAGE) {
-            sum = MAX_POINTS + 1;
-            break;
-          } else {
-            sum += DAMAGE_SCALING[cell - 1];
-          }
-
-        } else if (cell < 0) {
-          return false;
-        }
-
-        sum += cell;
-      }
-    }
-
-    for (vector<bool> &row : s.terrainCreation) {
-      for (bool creatingTerrain : row) {
-        if (creatingTerrain) {
-          sum += TERRAIN_COST;
-        }
-      }
-    }
-
-    if (sum > MAX_POINTS) {
-      return false;
-
-    } else if (s.health >= MAX_STAT || s.speed >= MAX_STAT) {
-      return false;
-
-    } else if (STAT_SCALING[s.health - 1] + STAT_SCALING[s.speed - 1] + sum >
-               MAX_POINTS) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 vector<pair<Position, int>> Game::getPositionsOfAttackPattern(int unitId,
