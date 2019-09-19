@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
       .methods("POST"_method)([&games](const crow::request &req) {
         string body = req.body;
         json parsedJson = json::parse(body);
-        std::cout << parsedJson << std::endl;
+        // std::cout << parsedJson << std::endl;
         int playerNum = parsedJson["playerNum"].get<int>();
         Strategy myGame(body, playerNum);
         // std::cout << "playerNum: " << playerNum << std::endl;
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
         json setupJson = setup;
         stringstream ss;
         ss << setupJson;
-        std::cout << "setupJson: " << setupJson << std::endl;
+        // std::cout << "setupJson: " << setupJson << std::endl;
         return ss.str();
       });
 
@@ -52,12 +52,11 @@ int main(int argc, char **argv) {
       .methods("POST"_method)([&games](const crow::request &req) {
         string body = req.body;
         json parsedJson = json::parse(body);
-        std::cout << parsedJson << std::endl;
+        // std::cout << parsedJson << std::endl;
         string gameId = parsedJson["gameId"].get<string>();
         // std::cout << "gameId: " << gameId << std::endl;
         Strategy &myGame = games[gameId];
         myGame.updateGame(body);
-        // std::cout << "updated game with new body" << std::endl;
 
         vector<UnitDecision> decision;
         try {
@@ -69,7 +68,7 @@ int main(int argc, char **argv) {
         json decisionJson = decision;
         stringstream ss;
         ss << decisionJson;
-        std::cout << "decisionJson: " << decisionJson << std::endl;
+        // std::cout << "decisionJson: " << decisionJson << std::endl;
         return ss.str();
       });
 
@@ -78,10 +77,18 @@ int main(int argc, char **argv) {
         string body = req.body;
         // std::cout << body << std::endl;
         json parsedJson = json::parse(body);
-        games.erase(parsedJson["gameId"].get<string>());
-        // std::cout << "game exited, length of games: " << games.size()
-        // << std::endl;
-        return "Game successfully exited.";
+        int winner = parsedJson["winner"].get<int>();
+        string gameId = parsedJson["gameId"].get<string>();
+        Strategy &myGame = games[gameId];
+        myGame.onGameOver(winner);
+        games.erase(gameId);
+
+        json gameOverJson;
+        gameOverJson["status"] = 200;
+        gameOverJson["message"] = "Game successfully exited";
+        stringstream ss;
+        ss << gameOverJson;
+        return ss.str();
       });
 
   CROW_ROUTE(app, "/health")([] { return 200; });

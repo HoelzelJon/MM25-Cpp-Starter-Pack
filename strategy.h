@@ -10,4 +10,5 @@ public:
   Strategy(std::string gameId, int playerId) : Game(gameId, playerId){};
   std::vector<MechMania::UnitSetup> getSetup();
   std::vector<MechMania::UnitDecision> doTurn();
+  void onGameOver(int winner);
 };

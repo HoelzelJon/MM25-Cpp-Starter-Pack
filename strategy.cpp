@@ -75,6 +75,20 @@ vector<UnitDecision> Strategy::doTurn() {
   return decisions;
 }
 
+void Strategy::onGameOver(int winner) {
+  if (winner == 0) {
+    // on game tie
+    std::cout << "the game ended in a tie" << std::endl;
+  } else if (winner == playerId_) {
+    // you won
+    std::cout << "you won!" << std::endl;
+  } else {
+    // you lost
+    std::cout << "you lost :(" << std::endl;
+  }
+}
+
+
 bool Strategy::isValidUnitDecision(vector<UnitDecision> decisions) {
   set<int> uniquePriorities;
   for (UnitDecision d : decisions) {
