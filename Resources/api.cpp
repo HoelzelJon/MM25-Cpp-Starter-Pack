@@ -88,7 +88,6 @@ vector<Direction> Game::pathTo(Position start, Position end,
   vector<vector<bool>> visited(tiles.size(), vector<bool>(tiles.size(), false));
 
   while (!q.empty()) {
-    std::cout << q.size() << std::endl;
     pair<Position, vector<Direction>> p = q.front();
     q.pop_front();
     Position pos = p.first;
@@ -98,21 +97,15 @@ vector<Direction> Game::pathTo(Position start, Position end,
       continue;
     }
 
-    std::cout << "on line " << __LINE__ << std::endl;
-    std::cout << pos.x << " " << pos.y << std::endl;
-    std::cout << dirs.size() << std::endl;
-
     if (visited[pos.y][pos.x]) {
       continue;
     } else {
       visited[pos.y][pos.x] = true;
     }
-    std::cout << "on line " << __LINE__ << std::endl;
 
     if (pos == end) {
       return dirs;
     }
-    std::cout << "on line " << __LINE__ << std::endl;
 
     Position left = {pos.x - 1, pos.y};
     if (!(left.x < 0 ||
@@ -123,7 +116,6 @@ vector<Direction> Game::pathTo(Position start, Position end,
       leftDirs.push_back(Direction::LEFT);
       q.push_front(std::make_pair(left, leftDirs));
     }
-    std::cout << "on line " << __LINE__ << std::endl;
 
     Position right = {pos.x + 1, pos.y};
     if (!(right.x >= (int)tiles.size() ||
@@ -134,7 +126,6 @@ vector<Direction> Game::pathTo(Position start, Position end,
       rightDirs.push_back(Direction::LEFT);
       q.push_front(std::make_pair(right, rightDirs));
     }
-    std::cout << "on line " << __LINE__ << std::endl;
 
     Position up = {pos.x, pos.y + 1};
     if (!(up.y >= (int)tiles.size() ||
@@ -145,7 +136,6 @@ vector<Direction> Game::pathTo(Position start, Position end,
       upDirs.push_back(Direction::LEFT);
       q.push_front(std::make_pair(up, upDirs));
     }
-    std::cout << "on line " << __LINE__ << std::endl;
 
     Position down = {pos.x, pos.y - 1};
     if (!(down.y < 0 ||
@@ -156,7 +146,6 @@ vector<Direction> Game::pathTo(Position start, Position end,
       downDirs.push_back(Direction::LEFT);
       q.push_front(std::make_pair(down, downDirs));
     }
-    std::cout << "on line " << __LINE__ << std::endl;
   }
 
   return vector<Direction>();
