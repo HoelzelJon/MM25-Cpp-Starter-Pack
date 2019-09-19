@@ -1,5 +1,5 @@
 #include "strategy.h"
-#include "api.h"
+#include "Resources/api.h"
 
 #include <iostream>
 #include <set>

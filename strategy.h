@@ -1,5 +1,5 @@
 #pragma once
-#include "api.h"
+#include "Resources/api.h"
 
 class Strategy : public MechMania::Game {
   static bool isValidUnitSetup(std::vector<MechMania::UnitSetup>);
