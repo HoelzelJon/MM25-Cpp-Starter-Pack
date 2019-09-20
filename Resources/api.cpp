@@ -238,6 +238,8 @@ Position Game::getPositionAfterMovement(Position init,
     case UP:
       dy += 1;
       break;
+    default:
+      break;
     }
   }
 

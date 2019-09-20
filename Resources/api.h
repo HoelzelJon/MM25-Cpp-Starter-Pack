@@ -23,7 +23,7 @@ static constexpr int NUM_UNITS = 3;
 /**
  * Possible directions that a Unit can go
  */
-enum Direction { UP, DOWN, LEFT, RIGHT };
+enum Direction { UP, DOWN, LEFT, RIGHT, STAY };
 /**
  * Possible types of terrain.
  */
