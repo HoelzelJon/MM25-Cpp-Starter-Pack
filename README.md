@@ -8,13 +8,22 @@ Here's all the code you need to get started with making a bot for MechMania in C
 # Pre-Setup
 
 1. Install or update clang++ to compile your C++ code!
-        
-2. Install Node. To do this, go [here](https://nodejs.org/en/download/) and download the appropriate installer for your operating system.
+
+2. Install Java. To do this, see [this guide](https://docs.oracle.com/en/java/javase/13/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A) for help.
+    * (This is used for the visualization of the game)
+    * Advice for Windows users:
+        * Make sure to set the `JAVA_HOME` variable as a SYSTEM environment variable, rather than a user environment variable.
+        * Make sure to NOT have `bin` at the end of your `JAVA_HOME` environment variable.
+    * Check that the `JAVA_HOME` environment variable is set correctly.
+        * For Windows, you can run `echo %JAVA_HOME%`. You should see a result similar to `C:\Program Files\Java\jdk1.8.0_171`. Note that this does NOT end with `\bin`.
+        * For Mac users, you can run `echo $JAVA_HOME`. You should see a result similar to `/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home`.
+
+3. Install Node. To do this, go [here](https://nodejs.org/en/download/) and download the appropriate installer for your operating system.
     * Run the installer with all the defaults.
 
-3. Run `npm install -g mechmania`.  This gets the `mm` command line tools, which are used to run the game, test and submit bots for the tournament.
+4. Run `npm install -g mechmania`.  This gets the `mm` command line tools, which are used to run the game, test and submit bots for the tournament.
 
-4. Run `mm download` to download required files.
+5. Run `mm download` to download required files.
 
 # Setup
 
@@ -28,13 +37,16 @@ Here's all the code you need to get started with making a bot for MechMania in C
 4. Run `mm play .`
     * This will build the bot in the given directory (`.`) and then starts a game in which your bot fights against itself.
     * On Windows, if an `mm play` command fails, make sure to close any Java SE Runtime Binary processes with Task Manager.
+    * run `mm play` with the `--logfile [filename]` option set from within Bash Subsystem for Windows to get a log for a game
+         * then run `mm play` with the `--input [filename]` option set from the Windows command prompt to view the game
+
 5. To run two different bots against each other, run `mm play bot1_directory bot2_directory`.
 6. To submit your bot, run `mm push .`
 
 Use `mm help` for more information!
 
 # Game API Information
-The header file (`strategy.h`) has a list of functions that you should implement, as well as other functions that you may use from the API.  
+The header file (`strategy.h`) has a list of functions that you should implement, and a list of functions to get data from the game are in `api.h`.  
    
 *Note: you should not need to edit the files inside of `Resources`.*  
   
