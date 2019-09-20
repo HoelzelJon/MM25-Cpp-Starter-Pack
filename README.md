@@ -25,6 +25,7 @@ Here's all the code you need to get started with making a bot for MechMania in C
     * On Windows, if an `mm play` command fails, make sure to close any Java SE Runtime Binary processes with Task Manager.
     * run `mm play` with the `--logfile [filename]` option set from within Bash Subsystem for Windows to get a log for a game
          * then run `mm play` with the `--input [filename]` option set from the Windows command prompt to view the game
+         * This also means you can't run `mm play human` from bash subsystem
 
 5. To run two different bots against each other, run `mm play bot1_directory bot2_directory`.
 6. To submit your bot, run `mm push .`
