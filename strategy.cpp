@@ -41,13 +41,20 @@ vector<UnitDecision> Strategy::doTurn() {
     }
     // choose a random opponent
     vector<Unit> opponentUnits = Game::getEnemyUnits();
-    int randIndex = std::rand() % opponentUnits.size() + 1;
-    Unit oppUnit = Game::getUnit(randIndex);
+    int randIndex = std::rand() % opponentUnits.size();
+    Unit oppUnit = opponentUnits[randIndex];
     Position end = oppUnit.pos;
+
+    // std::cout << "unit " << unit.id << " moving towards unit " << oppUnit.id
+    // << " at " << oppUnit.pos.x << ", " << oppUnit.pos.y << std::endl;
 
     // go in that direction
     vector<Direction> pathToOpp = Game::pathTo(unit.pos, end);
     pathToOpp.resize(unit.speed); // will be invalid if moves > speed
+    // std::cout << "unit " << unit.id << " moves ";
+    // for (Direction d : pathToOpp)
+    //   std::cout << d << " ";
+    // std::cout << std::endl;
 
     // figure out direction to attack in
     Position posAfterMovement =
@@ -89,7 +96,6 @@ void Strategy::onGameOver(string result) {
     std::cout << "you lost :(" << std::endl;
   }
 }
-
 
 bool Strategy::isValidUnitDecision(vector<UnitDecision> decisions) {
   set<int> uniquePriorities;

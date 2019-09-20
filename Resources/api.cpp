@@ -3,13 +3,13 @@
 
 #include <algorithm>
 #include <iostream>
-#include <deque>
+#include <queue>
 #include <set>
 #include <string>
 
 using json = nlohmann::json;
 using std::pair;
-using std::deque;
+using std::queue;
 using std::set;
 using std::string;
 using std::vector;
@@ -57,7 +57,7 @@ vector<Unit> Game::getMyUnits() {
 }
 
 vector<Unit> Game::getEnemyUnits() {
-  if (playerId_ == 1) {
+  if (playerId_ == 2) {
     return { getUnit(1), getUnit(2), getUnit(3) };
   } else {
     return { getUnit(4), getUnit(5), getUnit(6) };
@@ -83,14 +83,14 @@ std::vector<Direction> Game::pathTo(Position start, Position end) {
 
 vector<Direction> Game::pathTo(Position start, Position end,
                                vector<Position> tilesToAvoid) {
-  deque<pair<Position, vector<Direction>>> q;
-  q.push_front(std::make_pair(start, vector<Direction>()));
+  queue<pair<Position, vector<Direction>>> q;
+  q.push(std::make_pair(start, vector<Direction>()));
 
   vector<vector<bool>> visited(tiles_.size(), vector<bool>(tiles_.size(), false));
 
   while (!q.empty()) {
     pair<Position, vector<Direction>> p = q.front();
-    q.pop_front();
+    q.pop();
     Position pos = p.first;
     vector<Direction> dirs = p.second;
 
@@ -112,44 +112,48 @@ vector<Direction> Game::pathTo(Position start, Position end,
     if (!(left.x < 0 ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), left) !=
               tilesToAvoid.end() ||
-          getTile(left).type != TileType::BLANK)) {
+          getTile(left).type != TileType::BLANK ||
+          visited[left.x][left.y])) {
       vector<Direction> leftDirs(dirs);
       leftDirs.push_back(Direction::LEFT);
-      q.push_front(std::make_pair(left, leftDirs));
+      q.push(std::make_pair(left, leftDirs));
     }
 
     Position right = {pos.x + 1, pos.y};
     if (!(right.x >= (int)tiles_.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), right) !=
               tilesToAvoid.end() ||
-          getTile(right).type != TileType::BLANK)) {
+          getTile(right).type != TileType::BLANK ||
+          visited[right.x][right.y])) {
       vector<Direction> rightDirs(dirs);
-      rightDirs.push_back(Direction::LEFT);
-      q.push_front(std::make_pair(right, rightDirs));
+      rightDirs.push_back(Direction::RIGHT);
+      q.push(std::make_pair(right, rightDirs));
     }
 
     Position up = {pos.x, pos.y + 1};
     if (!(up.y >= (int)tiles_.size() ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), up) !=
               tilesToAvoid.end() ||
-          getTile(up).type != TileType::BLANK)) {
+          getTile(up).type != TileType::BLANK ||
+          visited[up.x][up.y])) {
       vector<Direction> upDirs(dirs);
-      upDirs.push_back(Direction::LEFT);
-      q.push_front(std::make_pair(up, upDirs));
+      upDirs.push_back(Direction::UP);
+      q.push(std::make_pair(up, upDirs));
     }
 
     Position down = {pos.x, pos.y - 1};
     if (!(down.y < 0 ||
           std::find(tilesToAvoid.begin(), tilesToAvoid.end(), down) !=
               tilesToAvoid.end() ||
-          getTile(down).type != TileType::BLANK)) {
+          getTile(down).type != TileType::BLANK ||
+          visited[down.x][down.y])) {
       vector<Direction> downDirs(dirs);
-      downDirs.push_back(Direction::LEFT);
-      q.push_front(std::make_pair(down, downDirs));
+      downDirs.push_back(Direction::DOWN);
+      q.push(std::make_pair(down, downDirs));
     }
   }
 
-  return vector<Direction>();
+  return vector<Direction>(1, Direction::STAY);
 }
 
 vector<pair<Position, int>> Game::getPositionsOfAttackPattern(int unitId,
