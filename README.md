@@ -34,6 +34,7 @@ Here's all the code you need to get started with making a bot for MechMania in C
 3. Run `make server`. This step should be completed whenever you want to run any `mm` commands with a new strategy.
     * If you encounter any linker errors that seem to do nothing with your files, this may be a result of some dependency errors.
          * [Crow](https://github.com/ipkn/crow) is the library used for the webserver, and has caused issues in the past. In particular, the [boost](https://www.boost.org/users/download/) C++ library.
+         * If you are still having issues, consult [Boost Installation](#boost-installation-faq)
 4. Run `mm play .`
     * This will build the bot in the given directory (`.`) and then starts a game in which your bot fights against itself.
     * On Windows, if an `mm play` command fails, make sure to close any Java SE Runtime Binary processes with Task Manager.
@@ -51,3 +52,12 @@ The header file (`strategy.h`) has a list of functions that you should implement
 *Note: you should not need to edit the files inside of `Resources`.*  
 
 Good luck, and happy coding!
+
+# Boost Installation FAQ
+## Mac and Linux
+```
+brew install boost
+```
+
+## Windows
+
