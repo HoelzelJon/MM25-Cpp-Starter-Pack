@@ -6,24 +6,9 @@ Here's all the code you need to get started with making a bot for MechMania in C
 * Setup -- Clone this repository and start running your bot!
 
 # Pre-Setup
+1. Follow the Pre-setup instructions on the wiki [here](https://github.com/HoelzelJon/MechMania-25-Wiki/wiki#pre-setup)
 
-1. Install or update clang++ to compile your C++ code! You can check out [this guide on getting started with clang](https://clang.llvm.org/get_started.html)
-
-2. Install Java. To do this, see [this guide](https://docs.oracle.com/en/java/javase/13/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A) for help.
-    * (This is used for the visualization of the game)
-    * Advice for Windows users:
-        * Make sure to set the `JAVA_HOME` variable as a SYSTEM environment variable, rather than a user environment variable.
-        * Make sure to NOT have `bin` at the end of your `JAVA_HOME` environment variable.
-    * Check that the `JAVA_HOME` environment variable is set correctly.
-        * For Windows, you can run `echo %JAVA_HOME%`. You should see a result similar to `C:\Program Files\Java\jdk1.8.0_171`. Note that this does NOT end with `\bin`.
-        * For Mac and Linux users, you can run `echo $JAVA_HOME`. You should see a result similar to `/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home`.
-
-3. Install Node. To do this, go [here](https://nodejs.org/en/download/) and download the appropriate installer for your operating system.
-    * Run the installer with all the defaults.
-
-4. Run `npm install -g mechmania`.  This gets the `mm` command line tools, which are used to run the game, test and submit bots for the tournament.
-
-5. Run `mm download` to download required files.
+2. Install or update clang++ to compile your C++ code! You can check out [this guide on getting started with clang](https://clang.llvm.org/get_started.html)
 
 # Setup
 
