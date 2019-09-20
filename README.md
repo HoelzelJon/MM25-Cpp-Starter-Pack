@@ -39,10 +39,13 @@ The header file (`strategy.h`) has a list of functions that you should implement
 Good luck, and happy coding!
 
 # Boost Installation FAQ
-## Mac and Linux
+## Mac
 ```
 brew install boost
 ```
 
-## Windows
+## Linux and Windows Ubuntu Subsystem
+```
+apt-get install libboost-all-dev
+```
 
