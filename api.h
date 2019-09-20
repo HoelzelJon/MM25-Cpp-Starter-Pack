@@ -43,15 +43,17 @@ struct Unit {
   int hp;
   int speed;
   std::vector<std::vector<int>> attack;
+  std::vector<std::vector<bool>> terrain;
   int id;
   Position pos;
   Unit()
       : hp(0), speed(0),
         attack(std::vector<std::vector<int>>(7, std::vector<int>(7, 0))),
+        terrain(std::vector<std::vector<bool>>(7, std::vector<bool>(7, false))),
         id(-1), pos(){};
-  Unit(int hp_, int speed_, std::vector<std::vector<int>> attack_, int id_,
+  Unit(int hp_, int speed_, std::vector<std::vector<int>> attack_, std::vector<std::vector<bool>> terrain_,int id_,
        Position pos_)
-      : hp(hp_), speed(speed_), attack(attack_), id(id_), pos(pos_) {};
+      : hp(hp_), speed(speed_), attack(attack_), terrain(terrain_), id(id_), pos(pos_) {};
   bool operator==(const Unit &other) const {
     return id == other.id;
   }
@@ -180,12 +182,22 @@ public:
   /**
    * Gives a path from a Position to another Position, while avoiding Tiles,
    * given by tilesToAvoid
+   * params:
+   *   Position start: A Position object for the start position
+   *   Position end: A Position object for the end position
+   *   std::vector<Position> tilesToAvoid: A vector of Position objects indicating which tiles to avoid
+   * Returns a vector of Directions indicating the shortest path from the desired positions
    */
   std::vector<Direction> pathTo(Position, Position, std::vector<Position>);
   std::vector<Direction> pathTo(Position, Position);
   /**
    * Gives the position and the attack damage of a unit at each position in its
    * attack pattern if the unit was attacking in the direction given.
+   * params:
+   *   unitId: The Id of the desired unit
+   *   dir: Direction to attack in
+   * output:
+   *   Returns a vector of <Position, int> pairs where the int is the damage at that Position
    */
   std::vector<std::pair<Position, int>> getPositionsOfAttackPattern(int unitId, Direction dir);
   /**

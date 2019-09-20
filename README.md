@@ -7,7 +7,7 @@ Here's all the code you need to get started with making a bot for MechMania in C
 
 # Pre-Setup
 
-1. Install or update clang++ to compile your C++ code!
+1. Install or update clang++ to compile your C++ code! You can check out [this guide on getting started with clang](https://clang.llvm.org/get_started.html)
 
 2. Install Java. To do this, see [this guide](https://docs.oracle.com/en/java/javase/13/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A) for help.
     * (This is used for the visualization of the game)

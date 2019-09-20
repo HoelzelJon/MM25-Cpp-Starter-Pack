@@ -39,7 +39,7 @@ void MechMania::from_json(const json &j, Position &p) {
  * Serialize Unit into json.
  */
 void MechMania::to_json(json &j, const Unit &u) {
-  j = json{{"hp", u.hp},           {"speed", u.speed}, {"attack", u.attack},
+  j = json{{"hp", u.hp},           {"speed", u.speed}, {"attack", u.attack}, {"terrain", u.terrain},
            {"id", u.id},       {"pos", u.pos}};
 }
 
@@ -52,6 +52,7 @@ void MechMania::from_json(const json &j, Unit &u) {
   j.at("attack").get_to(u.attack);
   j.at("id").get_to(u.id);
   j.at("pos").get_to(u.pos);
+  j.at("terrain").get_to(u.terrain);
 }
 
 /**
