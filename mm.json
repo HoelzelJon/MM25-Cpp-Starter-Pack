@@ -1,4 +1,4 @@
 {
-    "build": "make clean && make server",
+    "build": "make server",
     "run": "./server"
 }
