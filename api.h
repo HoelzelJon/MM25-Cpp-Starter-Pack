@@ -9,17 +9,8 @@ using json = nlohmann::json;
 
 namespace MechMania {
 
-
-// -------------------- constants, enums, and structs ----------------------
+  // -------------------- constants, enums, and structs ----------------------
 static constexpr int ATTACK_PATTERN_SIZE = 7;
-static constexpr int BASE_HEALTH = 1;
-static constexpr int BASE_SPEED = 1;
-static constexpr int MAX_POINTS = 24;
-static constexpr int TERRAIN_COST = 2;
-static constexpr int MAX_DAMAGE = 7;
-static constexpr int MAX_STAT = 9;
-static constexpr int DAMAGE_SCALING[7] = {1, 3, 6, 10, 15, 21, 27};
-static constexpr int STAT_SCALING[9] = {1, 2, 4, 6, 9, 12, 16, 20, 25};
 static constexpr int NUM_UNITS = 3;
 
 /**
@@ -58,6 +49,9 @@ struct Unit {
       : hp(0), speed(0),
         attack(std::vector<std::vector<int>>(7, std::vector<int>(7, 0))),
         id(-1), pos(){};
+  Unit(int hp_, int speed_, std::vector<std::vector<int>> attack_, int id_,
+       Position pos_)
+      : hp(hp_), speed(speed_), attack(attack_), id(id_), pos(pos_) {};
   bool operator==(const Unit &other) const {
     return id == other.id;
   }
@@ -85,6 +79,11 @@ struct UnitSetup {
   int health;
   int speed;
   int unitId;
+  UnitSetup(std::vector<std::vector<int>> attackPattern_,
+            std::vector<std::vector<bool>> terrainCreation_,
+            int health_, int speed_, int unitId_)
+           : attackPattern(attackPattern_), terrainCreation(terrainCreation_),
+             health(health_), speed(speed_), unitId(unitId_) {};
 };
 
 /**
@@ -96,6 +95,10 @@ struct UnitDecision {
   std::vector<Direction> movement;
   Direction attack;
   int unitId;
+  UnitDecision(int priority_, std::vector<Direction> movement_,
+               Direction attack_, int unitId_)
+              : priority(priority_), movement(movement_), attack(attack_),
+                unitId(unitId_) {};
 };
 
 // --------------------------- Game class ----------------------------------
