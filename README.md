@@ -1,35 +1,41 @@
-# Running MechMania locally
+# MechMania25 C++ Starter Pack
 
-## Requirements
-- docker
-- the contents of this directory
+Here's all the code you need to get started with making a bot for MechMania in C++. Just do these steps:
 
-## Cloning the repo
-```
-git clone https://github.com/HoelzelJon/MM25-Cpp-Starter-Pack  # clone the repository
-cd MM25-Cpp-Starter-Pack  # navigate to the folder
-```
+* Pre-Setup -- install Node and the `mm` command line tools
+* Setup -- Clone this repository and start running your bot!
 
-## Instructions for running bot server
-```
-docker build -t mm25 .
-docker run -t -i -p <port>:3000 mm25
-```
-- remember to replace <port> with your desired port number (if running two instances of game, then run on two different ports)
-  - ex. 3000 and 3001, both run in different instances of terminal
-- Ctrl-C to exit
-- remember to `docker build -t mm25 .` every time you update your code
+# Pre-Setup
 
-## Instructions for running Game Engine
-```
-java -jar <location of GameEngine.jar> <location of Maps/maps1.csv> <name of playerOne> <name of playerTwo> <address of playerOne> <address of playerTwo> STDOUT
-```
-Arguments:
-- `maps1.csv` is the map of the game
-- `name of player ___` is a display name for each player
-- each address is the locally hosted address of the bots that were ran in the section above
-  - when using this starter pack, the address is `https://0.0.0.0:PORTNUMBER/`
-  - remember to change out `PORTNUMBER` to the ports that were set above
-  - this can be exchanged for `HUMAN` to bring up a visual version
-- `STDOUT` means to print the output of the game engine to standard out
-  - this can be changed to a filename to output to a file
+1. Install or update clang++ to compile your C++ code!
+        
+2. Install Node. To do this, go [here](https://nodejs.org/en/download/) and download the appropriate installer for your operating system.
+    * Run the installer with all the defaults.
+
+3. Run `npm install -g mechmania`.  This gets the `mm` command line tools, which are used to run the game, test and submit bots for the tournament.
+
+4. Run `mm download` to download required files.
+
+# Setup
+
+1. Clone this repo (or fork it or download it somewhere as a ZIP)
+2. Modify the script at `strategy.cpp`.
+    * Write your code in the `Strategy::doTurn` method.
+    * You may also add other files or dependencies. If you have any questions about this, we're here to help!
+3. Run `make server`. This step should be completed whenever you want to run any `mm` commands with a new strategy.
+    * If you encounter any linker errors that seem to do nothing with your files, this may be a result of some dependency errors.
+         * [Crow](https://github.com/ipkn/crow) is the library used for the webserver, and has caused issues in the past. In particular, the [boost](https://www.boost.org/users/download/) C++ library. 
+4. Run `mm play .`
+    * This will build the bot in the given directory (`.`) and then starts a game in which your bot fights against itself.
+    * On Windows, if an `mm play` command fails, make sure to close any Java SE Runtime Binary processes with Task Manager.
+5. To run two different bots against each other, run `mm play bot1_directory bot2_directory`.
+6. To submit your bot, run `mm push .`
+
+Use `mm help` for more information!
+
+# Game API Information
+The header file (`strategy.h`) has a list of functions that you should implement, as well as other functions that you may use from the API.  
+   
+*Note: you should not need to edit the files inside of `Resources`.*  
+  
+Good luck, and happy coding!

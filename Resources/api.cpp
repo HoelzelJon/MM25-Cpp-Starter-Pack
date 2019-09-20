@@ -1,5 +1,6 @@
-#include "api.h"
+#include "../api.h"
 #include "json.hpp"
+#include "../strategy.h"
 
 #include <algorithm>
 #include <iostream>
@@ -17,35 +18,26 @@ using namespace MechMania;
 
 Game::Game(string gameJson, int playerId)
     : playerId_(playerId) {
-  // std::cout << "in Game::Game(string, int)" << std::endl;
   auto parsedJson = json::parse(gameJson);
   playerId_ = parsedJson["playerNum"].get<int>();
 }
 
 Game::Game(const Game &other)
     : tiles_(other.tiles_), units_(other.units_), playerId_(other.playerId_) {
-  // std::cout << "in Game::Game(Game)" << std::endl;
 }
 
 Game &Game::operator=(const Game &other) {
-  // std::cout << "in Game::operator=(Game)" << std::endl;
   tiles_ = other.tiles_;
   units_ = other.units_;
   playerId_ = other.playerId_;
   return *this;
 }
 
-// updates the game json. Called every turn
 void Game::updateGame(string setGameJson) {
   auto gameJson = json::parse(setGameJson);
   tiles_ = gameJson["tiles"].get<vector<vector<Tile>>>();
   units_ = gameJson["units"].get<vector<Unit>>();
   playerId_ = gameJson["playerNum"].get<int>();
-}
-
-vector<Unit> Game::convertJsonToUnits(string unitsJson) {
-  auto unitJson = json::parse(unitsJson);
-  return unitJson.get<vector<Unit>>();
 }
 
 vector<Unit> Game::getMyUnits() {
@@ -244,36 +236,6 @@ Position Game::getPositionAfterMovement(Position init,
   }
 
   return Position(init.x + dx, init.y + dy);
-}
-
-vector<vector<int>> Game::basicAttackPattern(AttackPatternType attackType) {
-  vector<vector<int>> defaultAttack = vector<vector<int>>(7, vector<int>(7, 0));
-  switch (attackType) {
-  case SNIPER:
-    // four on each direction
-    defaultAttack[4][0] = 2;
-    defaultAttack[0][4] = 2;
-    defaultAttack[4][6] = 2;
-    defaultAttack[6][4] = 2;
-    return defaultAttack;
-  case AOE:
-    // eight immediately surrounding bot
-    defaultAttack[3][3] = 1;
-    defaultAttack[5][5] = 1;
-    defaultAttack[3][5] = 1;
-    defaultAttack[5][3] = 1;
-    return defaultAttack;
-  case MELEE:
-    // four immediately surrounding bot
-    defaultAttack[3][4] = 2;
-    defaultAttack[4][3] = 2;
-    defaultAttack[5][4] = 2;
-    defaultAttack[4][5] = 2;
-    return defaultAttack;
-
-  default:
-    return vector<vector<int>>(7, vector<int>(7, 0));
-  }
 }
 
 Unit Game::getUnit(int unitId) {
