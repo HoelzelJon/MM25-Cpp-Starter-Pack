@@ -92,6 +92,12 @@ int main() {
 
   CROW_ROUTE(app, "/health")([] { return 200; });
 
+  CROW_ROUTE(app, "/actuator/shutdown")
+  	.methods("POST"_method)([&games](const crow::request &req) {
+    exit(0);
+    return "HELLOWORLD";
+  });
+
   long port = strtol(std::getenv("PORT"), nullptr, 0);
   app.port(port).multithreaded().run();
 }
